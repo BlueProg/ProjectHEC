@@ -5,6 +5,7 @@ function mainController($scope, $http) {
 	$scope.userList = [];
 	$scope.validLength = 5;
 	$scope.diffList = [];
+	$scope.dataExcell = null;
 
 	$http.get('/userList')
 		.success(function(data) {
@@ -35,6 +36,33 @@ function mainController($scope, $http) {
 			}
 		})
 	}
+
+	$scope.uploadExcell = function($event) {
+		console.log($event);
+	}
+
+	 var target = angular.element('#inputExcell');
+	 console.log(target);
+	 target.on('change', function(changeEvent) {
+	 	var reader = new FileReader();
+
+        reader.onload =function (evt) {
+          $scope.$apply(function () {
+            var data = evt.target.result;
+            var workbook = XLSX.read(data, {type: 'binary'});
+            var headerNames = XLSX.utils.sheet_to_json(
+				workbook.Sheets[workbook.SheetNames[0]],
+				{ header: 1 }
+			)[0];
+
+            var data = XLSX.utils.sheet_to_json( workbook.Sheets[workbook.SheetNames[0]]);
+            console.log(data);
+            $scope.dataExcell = data;
+            target.val(null);
+          });
+        };
+        reader.readAsBinaryString(changeEvent.target.files[0]);
+	 })
 }
 
 scotchTodo.directive('wmBlock', function ($parse) {
@@ -54,3 +82,36 @@ scotchTodo.directive('wmBlock', function ($parse) {
         }
     }   
 });
+/*
+scotchTodo.directive("fileread", [function () {
+  return {
+    scope: {
+      opts: '='
+    },
+    link: function ($scope, $elm, $attrs) {
+    	console.log($elm);
+      $elm.on('change', function (changeEvent) {
+        var reader = new FileReader();
+
+        reader.onload =function (evt) {
+          $scope.$apply(function () {
+            var data = evt.target.result;
+            var workbook = XLSX.read(data, {type: 'binary'});
+            var headerNames = XLSX.utils.sheet_to_json(
+				workbook.Sheets[workbook.SheetNames[0]],
+				{ header: 1 }
+			)[0];
+
+            var data = XLSX.utils.sheet_to_json( workbook.Sheets[workbook.SheetNames[0]]);
+            console.log(data);
+            $scope.dataExcell = data;
+            
+            $elm.val(null);
+          });
+        };
+
+        reader.readAsBinaryString(changeEvent.target.files[0]);
+      });
+    }
+  }
+}]);*/
