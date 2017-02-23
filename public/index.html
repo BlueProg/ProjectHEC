@@ -1,0 +1,75 @@
+<!-- index.html -->
+<!doctype html>
+
+<!-- ASSIGN OUR ANGULAR MODULE -->
+<html ng-app="scotchTodo">
+<head>
+    <!-- META -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Optimize mobile viewport -->
+
+    <title>HEC Project</title>
+
+    <!-- SCROLLS -->
+    <link rel="stylesheet" href="style.css"">
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css"><!-- load bootstrap -->
+    <style>
+        html                    { overflow-y:scroll; }
+        body                    { padding-top:50px; }
+        #todo-list              { margin-bottom:30px; }
+    </style>
+
+    <!-- SPELLS -->
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script><!-- load jquery -->
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.0.8/angular.min.js"></script><!-- load angular -->
+    <script src="core.js"></script>
+
+</head>
+<!-- SET THE CONTROLLER AND GET ALL TODOS -->
+<body ng-controller="mainController">
+    <div class="container">
+
+        <!-- HEADER AND TODO COUNT -->
+        <div class="jumbotron text-center">
+            <h1>HEC PROJECT</h1>
+        </div>
+        <form name="myForm">
+            <div class="row">
+                <div class="col-md-8">
+                  <label>Charactere restant: {{ 1 + validLength - dataTextarea.length }}</label>
+                  <textarea wm-block wm-block-length="validLength" ng-model="$parent.dataTextarea" class="form-control" rows="5" id="comment" required></textarea>
+                </div>
+                <div class="col-md-2">
+                    <label>Destinataires:<input ng-model="searchUser"></label>
+                    <div class="margin20">
+                        <div id="teamCheckboxList" class="checkboxList">
+                            <div ng-repeat="team in userList | filter:searchUser">
+                                <label>
+                                    <input type="checkbox" ng-model="team.isChecked" />
+                                    <span>{{team.name}}</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <label>Liste:<input ng-model="searchList"></label>
+                    <div class="margin20">
+                        <div id="teamCheckboxList" class="checkboxList">
+                            <div ng-repeat="list in diffList | filter:searchList">
+                                <label>
+                                    <input type="checkbox" ng-model="list.isChecked" ng-change="selectUserList(list)"/>
+                                    <span>{{list.name}}</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="marginT15 text-left">
+                <button type="submit" class="btn btn-primary btn-lg" ng-click="send()">Envoyer le message</button>
+            </div>
+        </form>
+    </div>
+</body>
+</html>
