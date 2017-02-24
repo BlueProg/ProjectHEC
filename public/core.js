@@ -3,7 +3,8 @@ var scotchTodo = angular.module('scotchTodo', [])
 
 .controller('SpredController', function ($scope, $http, ServerCommunicationFactory) {
 	$scope.userList = [];
-	$scope.validLength = 5;
+	$scope.validLength = 42;
+	$scope.validTitleLength = 10;
 	$scope.diffList = [];
 	$scope.dataExcell = null;
 
@@ -25,8 +26,18 @@ var scotchTodo = angular.module('scotchTodo', [])
 		})
 	}
 
-	 var target = angular.element('#inputExcell');
-	 target.on('change', function(changeEvent) {
+	$scope.send = function() {
+		console.log($scope.dataTextarea);
+		ServerCommunicationFactory.sendMessage({"title" : $scope.dataText, "message" : $scope.dataTextarea}).then(function(result) {
+			if (result == 200) {
+				$scope.dataText = "";
+				$scope.dataTextarea = "";	
+			}
+		});
+	}
+
+	var target = angular.element('#inputExcell');
+	target.on('change', function(changeEvent) {
 	 	var reader = new FileReader();
 
         reader.onload =function (evt) {
@@ -55,18 +66,17 @@ var scotchTodo = angular.module('scotchTodo', [])
 
 	function parseList(data) {
 		var parseDiffList = [];
-		angular.forEach(data, function(valueData, valueIndex) {
-			angular.forEach(valueData.list, function(valueUserInfo, keyUserInfo) {
+		for (var i = data.length - 1; i >= 0; i--) {
+			for (var j = data[i].list.length - 1; j >= 0; j--) {
 				var find = false;
-				console.log("entre");
-				angular.forEach(parseDiffList, function(valueDiff, keyDiff) {
-					if (valueDiff.name == valueUserInfo)
+				for (var k = parseDiffList.length - 1; k >= 0; k--) {
+					if (parseDiffList[k].name == data[i].list[j])
 						find = true;
-				})
+				}
 				if (find == false)
-					parseDiffList.push({"name" : valueUserInfo, "isChecked": false});	
-			})
-		})
+					parseDiffList.push({"name" : data[i].list[j], "isChecked": false});	
+			}
+		}
 		return parseDiffList;
 	}
 })
@@ -80,6 +90,9 @@ var scotchTodo = angular.module('scotchTodo', [])
 	},
 	factory.addUserList = function(data) {
 		return $http.post('/userList', data);
+	},
+	factory.sendMessage = function(data) {
+		return $http.post('/sendMessage', data);
 	}
 	return factory;
 }])

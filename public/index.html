@@ -38,11 +38,68 @@
         <div class="jumbotron text-center">
             <h1>HEC PROJECT</h1>
         </div>
-        <form name="myForm">
+        <form ng-submit="send()" name="myForm">
+
+        <div class="row">
+            <div class="col-md-8">
+              <div class="row">
+                <div class="col-md-12">
+                  <label>Charactere restant: {{ 1 + validTitleLength - dataText.length }}</label>
+                  <input placeholder="Votre titre" wm-block wm-block-length="validTitleLength" ng-model="$parent.dataText" class="form-control" id="comment" required/>
+                </div>
+              </div>
+              <div class="row marginT15">
+                <div class="col-md-12">
+                  <label>Charactere restant: {{ 1 + validLength - dataTextarea.length }}</label>
+                  <textarea placeholder="Votre message" wm-block wm-block-length="validLength" ng-model="$parent.dataTextarea" class="form-control" rows="5" id="comment" required></textarea>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-2">
+              <label>Destinataires:<input ng-model="searchUser"></label>
+              <div class="margin20">
+                  <div id="teamCheckboxList" class="checkboxList">
+                      <div ng-repeat="team in userList | filter:searchUser">
+                          <label>
+                              <input type="checkbox" ng-model="team.isChecked" />
+                              <span>{{team.name}}</span>
+                          </label>
+                      </div>
+                  </div>
+              </div>
+            </div>
+            <div class="col-md-2">
+              <label>Liste:<input ng-model="searchList"></label>
+              <div class="margin20">
+                  <div id="teamCheckboxList" class="checkboxList">
+                      <div ng-repeat="list in diffList | filter:searchList">
+                          <label>
+                              <input type="checkbox" ng-model="list.isChecked" ng-change="selectUserList(list)"/>
+                              <span>{{list.name}}</span>
+                          </label>
+                      </div>
+                  </div>
+              </div>
+            </div>
+          </div>
+          <div class="row m-15 marginT15">
+            <div class="col-md-3">
+              <button type="submit" class="btn btn-primary btn-lg">Envoyez le message</button>
+            </div>
+            <div class="col-md-2">
+              <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal">Import excel</button>
+            </div>
+          </div>
+          
+
+<!--
+<div class="marginT15 text-left">
+                <button type="submit" class="btn btn-primary btn-lg">Envoyez le message</button>
+            </div>
             <div class="row">
                 <div class="col-md-8">
                   <label>Charactere restant: {{ 1 + validLength - dataTextarea.length }}</label>
-                  <textarea wm-block wm-block-length="validLength" ng-model="$parent.dataTextarea" class="form-control" rows="5" id="comment" required></textarea>
+                  <textarea placeholder="Votre message" wm-block wm-block-length="validLength" ng-model="$parent.dataTextarea" class="form-control" rows="5" id="comment" required></textarea>
                 </div>
                 <div class="col-md-2">
                     <label>Destinataires:<input ng-model="searchUser"></label>
@@ -71,12 +128,11 @@
                     </div>
                 </div>
             </div>
-            <div class="marginT15 text-left">
-                <button type="submit" class="btn btn-primary btn-lg" ng-click="send()">Envoyez le message</button>
-            </div>
+            
         </form>
+
+        -->
                 <!-- Trigger the modal with a button -->
-        <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal">Import excell</button>
 
         <!-- Modal -->
         <div id="myModal" class="modal fade" role="dialog">
