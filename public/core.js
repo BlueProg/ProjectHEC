@@ -1,31 +1,19 @@
 
-var scotchTodo = angular.module('scotchTodo', []);
+var scotchTodo = angular.module('scotchTodo', [])
 
-function mainController($scope, $http) {
+.controller('SpredController', function ($scope, $http, ServerCommunicationFactory) {
 	$scope.userList = [];
 	$scope.validLength = 5;
 	$scope.diffList = [];
 	$scope.dataExcell = null;
 
-	$http.get('/userList')
-		.success(function(data) {
-			$scope.userList = data;
-			angular.forEach(data, function(valueData, valueIndex) {
-				angular.forEach(valueData.list, function(valueUserInfo, keyUserInfo) {
-					var find = false;
-					angular.forEach($scope.diffList, function(valueDiff, keyDiff) {
-						if (valueDiff.name == valueUserInfo)
-							find = true;
-					})
-					if (find == false)
-						$scope.diffList.push({"name" : valueUserInfo, "isChecked": false});	
-				})
-			})
-		})
-		.error(function(err) {
-			console.log('Error: ' + err);
-		})
-
+	ServerCommunicationFactory.getUserList().then(function (result) {
+		if (result.status == 200) {
+			$scope.userList = result.data;
+			$scope.diffList = parseList(result.data);
+		}
+	});
+	
 	$scope.selectUserList = function($event) {
 		angular.forEach($scope.userList, function(value, key) {
 			if (value.list.includes($event.name)) {
@@ -37,12 +25,7 @@ function mainController($scope, $http) {
 		})
 	}
 
-	$scope.uploadExcell = function($event) {
-		console.log($event);
-	}
-
 	 var target = angular.element('#inputExcell');
-	 console.log(target);
 	 target.on('change', function(changeEvent) {
 	 	var reader = new FileReader();
 
@@ -56,16 +39,52 @@ function mainController($scope, $http) {
 			)[0];
 
             var data = XLSX.utils.sheet_to_json( workbook.Sheets[workbook.SheetNames[0]]);
-            console.log(data);
-            $scope.dataExcell = data;
+            ServerCommunicationFactory.addUserList(data).then(function(result) {
+            	$scope.userList = result.data;
+            	$scope.diffList = parseList(result.data);
+            });
             target.val(null);
           });
         };
         reader.readAsBinaryString(changeEvent.target.files[0]);
 	 })
-}
 
-scotchTodo.directive('wmBlock', function ($parse) {
+	 $scope.modalClose = function() {
+		$scope.dataExcell = null;
+	}
+
+	function parseList(data) {
+		var parseDiffList = [];
+		angular.forEach(data, function(valueData, valueIndex) {
+			angular.forEach(valueData.list, function(valueUserInfo, keyUserInfo) {
+				var find = false;
+				console.log("entre");
+				angular.forEach(parseDiffList, function(valueDiff, keyDiff) {
+					if (valueDiff.name == valueUserInfo)
+						find = true;
+				})
+				if (find == false)
+					parseDiffList.push({"name" : valueUserInfo, "isChecked": false});	
+			})
+		})
+		return parseDiffList;
+	}
+})
+
+.factory('ServerCommunicationFactory', ['$http', function($http) {
+
+	var factory = {};
+
+	factory.getUserList = function() {
+		return $http.get('/userList');
+	},
+	factory.addUserList = function(data) {
+		return $http.post('/userList', data);
+	}
+	return factory;
+}])
+
+.directive('wmBlock', function ($parse) {
     return {
         scope: {
           wmBlockLength: '='
@@ -82,36 +101,3 @@ scotchTodo.directive('wmBlock', function ($parse) {
         }
     }   
 });
-/*
-scotchTodo.directive("fileread", [function () {
-  return {
-    scope: {
-      opts: '='
-    },
-    link: function ($scope, $elm, $attrs) {
-    	console.log($elm);
-      $elm.on('change', function (changeEvent) {
-        var reader = new FileReader();
-
-        reader.onload =function (evt) {
-          $scope.$apply(function () {
-            var data = evt.target.result;
-            var workbook = XLSX.read(data, {type: 'binary'});
-            var headerNames = XLSX.utils.sheet_to_json(
-				workbook.Sheets[workbook.SheetNames[0]],
-				{ header: 1 }
-			)[0];
-
-            var data = XLSX.utils.sheet_to_json( workbook.Sheets[workbook.SheetNames[0]]);
-            console.log(data);
-            $scope.dataExcell = data;
-            
-            $elm.val(null);
-          });
-        };
-
-        reader.readAsBinaryString(changeEvent.target.files[0]);
-      });
-    }
-  }
-}]);*/

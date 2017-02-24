@@ -31,7 +31,7 @@
 
 </head>
 <!-- SET THE CONTROLLER AND GET ALL TODOS -->
-<body ng-controller="mainController">
+<body ng-controller="SpredController">
     <div class="container">
 
         <!-- HEADER AND TODO COUNT -->
@@ -72,7 +72,7 @@
                 </div>
             </div>
             <div class="marginT15 text-left">
-                <button type="submit" class="btn btn-primary btn-lg" ng-click="send()">Envoyer le message</button>
+                <button type="submit" class="btn btn-primary btn-lg" ng-click="send()">Envoyez le message</button>
             </div>
         </form>
                 <!-- Trigger the modal with a button -->
@@ -90,12 +90,15 @@
               </div>
               <div class="modal-body">
                 <div ng-show="dataExcell == null">
-                  <p>Selectionner votre fichier .xls, .xlsx, .ods</p>
+                  <p>Selectionnez votre fichier .xls, .xlsx, .ods</p>
                   <input id="inputExcell" type="file" accept=".xls,.xlsx,.ods" multiple="false" />
+                </div>
+                <div ng-show="dataExcell">
+                  <p>Vos donnez on etait correctement importé !</p>
                 </div>
               </div>
               <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button ng-click="modalClose()" type="button" class="btn btn-default" data-dismiss="modal">Close</button>
               </div>
             </div>
           </div>
