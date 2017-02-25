@@ -1,4 +1,7 @@
 
+textarea {
+	resize: none;
+}
 .margin20 {
 	margin: 20px;
 }
@@ -18,3 +21,4 @@
     height: 100px; 
     overflow-y: scroll;
 }
+
