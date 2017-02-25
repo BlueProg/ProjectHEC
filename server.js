@@ -49,7 +49,6 @@ router.route('/userList')
 		res.json(userList);
 	})
 	.post(function(req, res) {
-		console.log(req.body);
 		for (var i = req.body.length - 1; i >= 0; i--) {
 			var data = req.body[i];
 			data.isChecked = false;
@@ -58,7 +57,6 @@ router.route('/userList')
 			});
 			userList.push(data);
 		}
-		console.log(userList);
 		res.send(userList);
 	});
 
