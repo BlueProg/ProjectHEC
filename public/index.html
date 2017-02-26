@@ -14,12 +14,6 @@
     <link rel="stylesheet" href="style.css"">
     <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css"><!-- load bootstrap 
     -->
-    <style>
-        html                    { overflow-y:scroll; }
-        body                    { padding-top:50px; }
-        #todo-list              { margin-bottom:30px; }
-    </style>
-
     <!-- SPELLS -->
     <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script><!-- load jquery -->
     <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.0.8/angular.min.js"></script><!-- load angular -->
@@ -36,7 +30,7 @@
 
         <!-- HEADER AND TODO COUNT -->
         <div class="jumbotron text-center">
-            <h1>HEC PROJECT</h1>
+            <h1>SPRED</h1>
         </div>
         <form ng-submit="send()" name="myForm">
 
@@ -55,84 +49,38 @@
                 </div>
               </div>
             </div>
-            <div class="col-md-2">
-              <label>Destinataires:<input ng-model="searchUser"></label>
-              <div class="margin20">
+            <div ng-show="userList">
+              <div class="col-md-3">
+                <div class="text-center">
+                  <label class="marginR15">Destinataire:</label><input ng-model="searchUser">
+                </div>
+                <div class="margin20">
                   <div id="teamCheckboxList" class="checkboxList">
-                      <div ng-repeat="team in userList | filter:searchUser">
-                          <label>
-                              <input type="checkbox" ng-model="team.isChecked" />
-                              <span>{{team.name}}</span>
-                          </label>
-                      </div>
+                    <div ng-repeat="user in userList | filter: searchUser">
+                      <label>
+                        <input class="margin5" type="checkbox" ng-model="elem.isChecked" />
+                        <span>{{user.name}}</span>
+                      </label>
+                    </div>
                   </div>
-              </div>
-            </div>
-            <div class="col-md-2">
-              <label>Liste:<input ng-model="searchList"></label>
-              <div class="margin20">
-                  <div id="teamCheckboxList" class="checkboxList">
-                      <div ng-repeat="list in diffList | filter:searchList">
-                          <label>
-                              <input type="checkbox" ng-model="list.isChecked" ng-change="selectUserList(list)"/>
-                              <span>{{list.name}}</span>
-                          </label>
-                      </div>
-                  </div>
+                </div>
               </div>
             </div>
           </div>
-          <div class="row m-15 marginT15">
-            <div class="col-md-3">
+          <div class="row marginT15">
+            <div class="col-md-2">
               <button type="submit" class="btn btn-primary btn-lg">Envoyez le message</button>
             </div>
             <div class="col-md-2">
-              <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal">Import excel</button>
+              
+            </div>
+            <div class="col-md-2">
+              <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal">Importez un excel</button>
+            </div>
+            <div class="col-md-2">
+              <button ng-click="delete()" type="button" class="btn btn-danger btn-lg">Supprimez data</button>
             </div>
           </div>
-          
-
-<!--
-<div class="marginT15 text-left">
-                <button type="submit" class="btn btn-primary btn-lg">Envoyez le message</button>
-            </div>
-            <div class="row">
-                <div class="col-md-8">
-                  <label>Charactere restant: {{ 1 + validLength - dataTextarea.length }}</label>
-                  <textarea placeholder="Votre message" wm-block wm-block-length="validLength" ng-model="$parent.dataTextarea" class="form-control" rows="5" id="comment" required></textarea>
-                </div>
-                <div class="col-md-2">
-                    <label>Destinataires:<input ng-model="searchUser"></label>
-                    <div class="margin20">
-                        <div id="teamCheckboxList" class="checkboxList">
-                            <div ng-repeat="team in userList | filter:searchUser">
-                                <label>
-                                    <input type="checkbox" ng-model="team.isChecked" />
-                                    <span>{{team.name}}</span>
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-2">
-                    <label>Liste:<input ng-model="searchList"></label>
-                    <div class="margin20">
-                        <div id="teamCheckboxList" class="checkboxList">
-                            <div ng-repeat="list in diffList | filter:searchList">
-                                <label>
-                                    <input type="checkbox" ng-model="list.isChecked" ng-change="selectUserList(list)"/>
-                                    <span>{{list.name}}</span>
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-        </form>
-
-        -->
-                <!-- Trigger the modal with a button -->
 
         <!-- Modal -->
         <div id="myModal" class="modal fade" role="dialog">
@@ -142,19 +90,38 @@
             <div class="modal-content">
               <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title">Import excell</h4>
+                <h4 class="modal-title">Importez un excel</h4>
               </div>
               <div class="modal-body">
-                <div ng-show="dataExcell == null">
+                <div ng-show="showUpload">
                   <p>Selectionnez votre fichier .xls, .xlsx, .ods</p>
                   <input id="inputExcell" type="file" accept=".xls,.xlsx,.ods" multiple="false" />
                 </div>
-                <div ng-show="dataExcell">
-                  <p>Vos donnez on etait correctement importé !</p>
+                <div ng-show="showUpload == false">
+                  <div class="row">
+                    <div class="col-md-6">
+                      <p>Selectionnez la/les colonne(s) reference(s) pour destinataire</p>
+                      <div ng-repeat="type in selectTypeColum">
+                        <div ng-show="type.nameColum != 'isChecked'">
+                          <label>
+                            <input ng-change="changeRenduType()" type="checkbox" ng-model="type.isChecked"/>
+                            <span>{{type.nameColum}}</span>
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                    <div ng-show="renduType">
+                      <div class="col-md-6">
+                        <p>Exemple de rendu</p>
+                        <p>{{renduType}}</p>
+                      </div>  
+                    </div>
+                  </div>
                 </div>
-              </div>
-              <div class="modal-footer">
-                <button ng-click="modalClose()" type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <div class="modal-footer">
+                  <button ng-click="modalClose()" type="button" class="btn btn-warning" data-dismiss="modal">Annuler</button>
+                  <button ng-click="modalSave()" type="button" class="btn btn-primary" data-dismiss="modal">Confirmer</button>
+                </div>
               </div>
             </div>
           </div>

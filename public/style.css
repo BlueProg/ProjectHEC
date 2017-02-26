@@ -1,9 +1,14 @@
-
+html { overflow-y:scroll; }
+body { padding-top:50px; }
 textarea {
 	resize: none;
 }
 .margin20 {
 	margin: 20px;
+}
+
+.margin5 {
+	margin: 5px !important;
 }
 
 .marginR15 {
@@ -18,7 +23,7 @@ textarea {
     border:1px solid #000;
     background-color:#fff; 
     color:#000;
-    height: 100px; 
+    height: 200px; 
     overflow-y: scroll;
 }
 

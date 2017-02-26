@@ -48,7 +48,7 @@ function sendSms() {
 	    	'apikey': "",
 	    	'message[content]': "autre test",
 	    	'message[senderlabel]': "Expediteur",
-	    	'message[recipients]': '+33652937461',
+	    	'message[recipients]': '+33',
 	    	'message[subtype]': "LOWCOST",
 	    	'message[type]': "sms"
 	    },
@@ -77,14 +77,13 @@ router.route('/userList')
 		res.json(userList);
 	})
 	.post(function(req, res) {
-		for (var i = req.body.length - 1; i >= 0; i--) {
-			var data = req.body[i];
-			data.isChecked = false;
-			data.list = data.list.split(',').map(function (item) {
-				return item.trim();
-			});
-			userList.push(data);
-		}
+
+		userList = req.body;
+		res.send(userList);
+	})
+	.delete(function(req, res) {
+
+		userList = [];
 		res.send(userList);
 	});
 

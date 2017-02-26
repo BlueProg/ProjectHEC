@@ -3,16 +3,15 @@ var scotchTodo = angular.module('scotchTodo', [])
 
 .controller('SpredController', function ($scope, $http, ServerCommunicationFactory) {
 	$scope.userList = [];
-	$scope.validLength = 42;
-	$scope.validTitleLength = 10;
+	$scope.validLength = 139;
+	$scope.validTitleLength = 19;
 	$scope.diffList = [];
-	$scope.dataExcell = null;
+	$scope.showUpload = true;
 
 	ServerCommunicationFactory.getUserList().then(function (result) {
-		if (result.status == 200) {
-			$scope.userList = result.data;
-			$scope.diffList = parseList(result.data);
-		}
+
+		if (result.data.length != 0)
+			$scope.userList = parseUser(result);
 	});
 	
 	$scope.selectUserList = function($event) {
@@ -27,12 +26,17 @@ var scotchTodo = angular.module('scotchTodo', [])
 	}
 
 	$scope.send = function() {
-		console.log($scope.dataTextarea);
 		ServerCommunicationFactory.sendMessage({"title" : $scope.dataText, "message" : $scope.dataTextarea}).then(function(result) {
 			if (result == 200) {
 				$scope.dataText = "";
 				$scope.dataTextarea = "";	
 			}
+		});
+	}
+
+	$scope.delete = function() {
+		ServerCommunicationFactory.deleteData().then(function(result) {
+			$scope.userList = result.data;
 		});
 	}
 
@@ -48,12 +52,18 @@ var scotchTodo = angular.module('scotchTodo', [])
 				workbook.Sheets[workbook.SheetNames[0]],
 				{ header: 1 }
 			)[0];
-
-            var data = XLSX.utils.sheet_to_json( workbook.Sheets[workbook.SheetNames[0]]);
-            ServerCommunicationFactory.addUserList(data).then(function(result) {
-            	$scope.userList = result.data;
-            	$scope.diffList = parseList(result.data);
-            });
+            var result = XLSX.utils.sheet_to_json( workbook.Sheets[workbook.SheetNames[0]]);        
+        	$scope.resultExcel = result;
+        	$scope.showUpload = false;
+        	var typeColum = [];
+        	if (result.length > 0) {
+        		for (var property in result[0]) {
+				    if (result[0].hasOwnProperty(property)) {
+				        typeColum.push({"nameColum": property, "isChecked": false});
+				    }
+				}
+        	}
+        	$scope.selectTypeColum = typeColum;
             target.val(null);
           });
         };
@@ -61,12 +71,75 @@ var scotchTodo = angular.module('scotchTodo', [])
 	 })
 
 	 $scope.modalClose = function() {
-		$scope.dataExcell = null;
+		cleanImport();
+	}
+
+	$scope.changeRenduType = function() {
+		var renduString = "";
+		for (var i = $scope.selectTypeColum.length - 1; i >= 0; i--) {
+			if ($scope.resultExcel.length > 0) {
+				if ($scope.selectTypeColum[i].isChecked) {
+					renduString += ' ' + $scope.resultExcel[0][$scope.selectTypeColum[i].nameColum];
+				}
+			}
+		}
+		$scope.renduType = renduString;
+	}
+
+	$scope.modalSave = function() {
+		var data = {
+			"allData": [],
+			"destinataire": []
+		};
+		if ($scope.resultExcel) {
+			data.allData = $scope.resultExcel;
+			for (var i = $scope.selectTypeColum.length - 1; i >= 0; i--) {
+				if ($scope.resultExcel.length > 0) {
+					if ($scope.selectTypeColum[i].isChecked) {
+						data.destinataire.push($scope.selectTypeColum[i]);
+					}
+				}
+			}
+			ServerCommunicationFactory.addUserList(data).then(function(result) {
+				if (result.data.length  !=  0)
+					$scope.userList = parseUser(result);
+				cleanImport();
+			});
+		}
+	}
+
+	function cleanImport() {
+		$scope.resultExcel = null;
+		$scope.showUpload = true;
+		$scope.selectTypeColum = "";
+		$scope.renduType = null;
+	}
+
+	function parseUser(result) {
+		var viewData = [];
+		var allData = result.data.allData; 
+		for (var i = allData.length - 1; i >= 0; i--) {
+			viewData.push({
+				"name": formatName(allData[i], result.data.destinataire),
+				"isChecked": false
+			});
+		}
+		return viewData;
+	}
+
+	function formatName(object, format) {
+
+		var nameString = "";
+		for (var i = format.length - 1; i >= 0; i--) {
+			nameString += object[format[i].nameColum] + " ";
+		}
+		return nameString;
 	}
 
 	function parseList(data) {
 		var parseDiffList = [];
-		for (var i = data.length - 1; i >= 0; i--) {
+		if (data.list) {
+			for (var i = data.length - 1; i >= 0; i--) {
 			for (var j = data[i].list.length - 1; j >= 0; j--) {
 				var find = false;
 				for (var k = parseDiffList.length - 1; k >= 0; k--) {
@@ -75,6 +148,7 @@ var scotchTodo = angular.module('scotchTodo', [])
 				}
 				if (find == false)
 					parseDiffList.push({"name" : data[i].list[j], "isChecked": false});	
+				}
 			}
 		}
 		return parseDiffList;
@@ -90,6 +164,9 @@ var scotchTodo = angular.module('scotchTodo', [])
 	},
 	factory.addUserList = function(data) {
 		return $http.post('/userList', data);
+	},
+	factory.deleteData = function() {
+		return $http.delete('/userList');
 	},
 	factory.sendMessage = function(data) {
 		return $http.post('/sendMessage', data);
