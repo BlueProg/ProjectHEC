@@ -101,6 +101,6 @@ router.route('/sendMessage')
 
 app.use('/', router);
 
-app.listen(8080 || process.env.port);
+app.listen(process.env.PORT || 8080);
 
 console.log("App listening on port 8080");
