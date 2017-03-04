@@ -110,24 +110,32 @@ var scotchTodo = angular.module('scotchTodo', ['ngAnimate', 'ngSanitize', 'ui.bo
 
 	$scope.modalSave = function() {
 		var data = {
-			"allData": [],
-			"destinataire": []
+			"dest": [],
+			"filter": [],
+			"number": []
 		};
 		if ($scope.resultExcel) {
-			data.allData = $scope.resultExcel;
-			for (var i = $scope.modalDest.length - 1; i >= 0; i--) {
-				if ($scope.resultExcel.length > 0) {
-					if ($scope.modalDest[i].isChecked) {
-						data.destinataire.push($scope.modalDest[i]);
-					}
+			data.dest = parseUser($scope.modalDest, 1);
+			for (var i = $scope.modalFilter.length - 1; i >= 0; i--) {
+					data.filter.push({
+						"name": $scope.modalFilter[i].nameColum,
+						"isChecked": false
+					});
+			}
+			for (var i = $scope.modalNumber.length - 1; i >= 0; i--) {
+				if ($scope.modalNumber[i].isChecked) {
+					data.number.push({
+						"name": $scope.modalNumber[i].nameColum,
+						"isChecked": false
+					});
 				}
 			}
 			ServerCommunicationFactory.addUserList(data).then(function(result) {
-				if (result.data.length  !=  0)
-					$scope.userList = parseUser(result);
+				
 				cleanImport();
 			});
 		}
+		console.log(data);
 	}
 
 	function cleanImport() {
@@ -137,23 +145,33 @@ var scotchTodo = angular.module('scotchTodo', ['ngAnimate', 'ngSanitize', 'ui.bo
 		$scope.renduType = null;
 	}
 
-	function parseUser(result) {
+	function parseUser(result, multi) {
 		var viewData = [];
-		var allData = result.data.allData; 
+		var allData = $scope.resultExcel;
 		for (var i = allData.length - 1; i >= 0; i--) {
-			viewData.push({
-				"name": formatName(allData[i], result.data.destinataire),
-				"isChecked": false
-			});
+			if (multi == 1) {
+				viewData.push({
+					"name": formatName(result, allData[i]),
+					"isChecked": false
+				});	
+			}
+			else {
+				viewData.push({
+					"name": allData[i],
+					"isChecked": false
+				});	
+			}
 		}
 		return viewData;
 	}
 
-	function formatName(object, format) {
+	function formatName(format, object) {
 
 		var nameString = "";
 		for (var i = format.length - 1; i >= 0; i--) {
-			nameString += object[format[i].nameColum] + " ";
+			if (format[i].isChecked) {
+				nameString += object[format[i].nameColum] + " ";
+			}
 		}
 		return nameString;
 	}
