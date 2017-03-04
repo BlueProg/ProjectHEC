@@ -10,17 +10,19 @@
 
     <title>HEC Project</title>
 
-    <!-- SCROLLS -->
     <link rel="stylesheet" href="style.css"">
-    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css"><!-- load bootstrap 
-    -->
-    <!-- SPELLS -->
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script><!-- load jquery -->
-    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.0.8/angular.min.js"></script><!-- load angular -->
+    <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
     <script src="https://cdn.rawgit.com/SheetJS/js-xlsx/v0.8.0/dist/xlsx.full.min.js"></script>
     <script src="https://cdn.rawgit.com/SheetJS/js-xlsx/v0.8.0/dist/ods.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    
+    <script src="jquery-3.1.1.min.js"></script>
+    <script src="bootstrap/js/bootstrap.min.js"></script>
+    <script src="angular.min.js"></script><!-- load angular -->
+    <script src="angular-sanitize.min.js"></script>
+    <script src="angular-touch.min.js"></script>
+    <script src="angular-animate.min.js"></script>
+    <script src="ui-bootstrap-tpls-2.5.0.min.js"></script>
     <script src="core.js"></script>
 
 </head>
@@ -33,18 +35,11 @@
             <h1>SPRED</h1>
         </div>
         <form ng-submit="send()" name="myForm">
-
         <div class="row">
             <div class="col-md-8">
-              <div class="row">
-                <div class="col-md-12">
-                  <label>Charactere restant: {{ 1 + validTitleLength - dataText.length }}</label>
-                  <input placeholder="Votre titre" wm-block wm-block-length="validTitleLength" ng-model="$parent.dataText" class="form-control" id="comment" required/>
-                </div>
-              </div>
               <div class="row marginT15">
                 <div class="col-md-12">
-                  <label>Charactere restant: {{ 1 + validLength - dataTextarea.length }}</label>
+                  <label>Caractères restant: {{ 1 + validLength - dataTextarea.length }}</label>
                   <textarea placeholder="Votre message" wm-block wm-block-length="validLength" ng-model="$parent.dataTextarea" class="form-control" rows="5" id="comment" required></textarea>
                 </div>
               </div>
@@ -98,26 +93,59 @@
                   <input id="inputExcell" type="file" accept=".xls,.xlsx,.ods" multiple="false" />
                 </div>
                 <div ng-show="showUpload == false">
-                  <div class="row">
-                    <div class="col-md-6">
-                      <p>Selectionnez la/les colonne(s) reference(s) pour destinataire</p>
-                      <div ng-repeat="type in selectTypeColum">
-                        <div ng-show="type.nameColum != 'isChecked'">
-                          <label>
-                            <input ng-change="changeRenduType()" type="checkbox" ng-model="type.isChecked"/>
-                            <span>{{type.nameColum}}</span>
-                          </label>
+                  <div ng-show="showPage() == 1">
+                    <div class="row">
+                      <div class="col-md-6">
+                        <p>Selectionnez la/les colonne(s) reference(s) pour destinataire</p>
+                        <div ng-repeat="type in modalDest">
+                          <div ng-show="type.nameColum != 'isChecked'">
+                            <label>
+                              <input ng-change="changeRenduType()" type="checkbox" ng-model="type.isChecked"/>
+                              <span>{{type.nameColum}}</span>
+                            </label>
+                          </div>
+                        </div>
+                      </div>
+                      <div ng-show="renduType">
+                        <div class="col-md-6">
+                          <p>Exemple de rendu</p>
+                          <p>{{renduType}}</p>
+                        </div>  
+                      </div>
+                    </div>
+                  </div>
+                  <div ng-show="showPage() == 2">
+                    <div class="row">
+                      <div class="col-md-6">
+                        <p>Selectionnez la/les colonne(s) reference(s) pour les filtres</p>
+                        <div ng-repeat="type in modalFilter">
+                          <div ng-show="type.nameColum != 'isChecked'">
+                            <label>
+                              <input type="checkbox" ng-model="type.isChecked"/>
+                              <span>{{type.nameColum}}</span>
+                            </label>
+                          </div>
                         </div>
                       </div>
                     </div>
-                    <div ng-show="renduType">
+                  </div>
+                  <div ng-show="showPage() == 3">
+                    <div class="row">
                       <div class="col-md-6">
-                        <p>Exemple de rendu</p>
-                        <p>{{renduType}}</p>
-                      </div>  
+                        <p>Selectionnez la colonne pour le numéro de mobile</p>
+                        <div ng-repeat="type in modalNumber">
+                          <div ng-show="type.nameColum != 'isChecked'">
+                            <label>
+                              <input type="checkbox" ng-model="type.isChecked"/>
+                              <span>{{type.nameColum}}</span>
+                            </label>
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
+                <ul items-per-page="1" uib-pagination total-items="totalItems" ng-model="currentPage" ng-change="pageChanged()"></ul>
                 <div class="modal-footer">
                   <button ng-click="modalClose()" type="button" class="btn btn-warning" data-dismiss="modal">Annuler</button>
                   <button ng-click="modalSave()" type="button" class="btn btn-primary" data-dismiss="modal">Confirmer</button>

@@ -1,5 +1,5 @@
 
-var scotchTodo = angular.module('scotchTodo', [])
+var scotchTodo = angular.module('scotchTodo', ['ngAnimate', 'ngSanitize', 'ui.bootstrap'])
 
 .controller('SpredController', function ($scope, $http, ServerCommunicationFactory) {
 	$scope.userList = [];
@@ -14,6 +14,26 @@ var scotchTodo = angular.module('scotchTodo', [])
 			$scope.userList = parseUser(result);
 	});
 	
+
+	$scope.totalItems = 3;
+	$scope.currentPage = 1;
+	$scope.modalDest = '';
+	$scope.modalFilter = '';
+	$scope.modalNumber = '';
+
+	$scope.setPage = function (pageNo) {
+		$scope.currentPage = pageNo;
+	};
+
+	$scope.pageChanged = function() {
+
+	};
+
+
+	$scope.showPage = function() {
+		return $scope.currentPage;
+	}
+
 	$scope.selectUserList = function($event) {
 		angular.forEach($scope.userList, function(value, key) {
 			if (value.list.includes($event.name)) {
@@ -63,7 +83,9 @@ var scotchTodo = angular.module('scotchTodo', [])
 				    }
 				}
         	}
-        	$scope.selectTypeColum = typeColum;
+        	$scope.modalDest = angular.copy(typeColum);
+           	$scope.modalFilter = angular.copy(typeColum);
+        	$scope.modalNumber = angular.copy(typeColum);
             target.val(null);
           });
         };
@@ -76,10 +98,10 @@ var scotchTodo = angular.module('scotchTodo', [])
 
 	$scope.changeRenduType = function() {
 		var renduString = "";
-		for (var i = $scope.selectTypeColum.length - 1; i >= 0; i--) {
+		for (var i = $scope.modalDest.length - 1; i >= 0; i--) {
 			if ($scope.resultExcel.length > 0) {
-				if ($scope.selectTypeColum[i].isChecked) {
-					renduString += ' ' + $scope.resultExcel[0][$scope.selectTypeColum[i].nameColum];
+				if ($scope.modalDest[i].isChecked) {
+					renduString += ' ' + $scope.resultExcel[0][$scope.modalDest[i].nameColum];
 				}
 			}
 		}
@@ -93,10 +115,10 @@ var scotchTodo = angular.module('scotchTodo', [])
 		};
 		if ($scope.resultExcel) {
 			data.allData = $scope.resultExcel;
-			for (var i = $scope.selectTypeColum.length - 1; i >= 0; i--) {
+			for (var i = $scope.modalDest.length - 1; i >= 0; i--) {
 				if ($scope.resultExcel.length > 0) {
-					if ($scope.selectTypeColum[i].isChecked) {
-						data.destinataire.push($scope.selectTypeColum[i]);
+					if ($scope.modalDest[i].isChecked) {
+						data.destinataire.push($scope.modalDest[i]);
 					}
 				}
 			}
@@ -111,7 +133,7 @@ var scotchTodo = angular.module('scotchTodo', [])
 	function cleanImport() {
 		$scope.resultExcel = null;
 		$scope.showUpload = true;
-		$scope.selectTypeColum = "";
+		$scope.modalDest = "";
 		$scope.renduType = null;
 	}
 

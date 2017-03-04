@@ -36,7 +36,20 @@ function sendMail(data) {
 	    console.log('Message %s sent: %s', info.messageId, info.response);
 	});	
 }
+
+router.route('/sendMessage')
+	.post(function(req, res) {
+		console.log(req.body);
+		mailOptions.subject = req.body.title;
+		mailOptions.text = req.body.message;
+		console.log(mailOptions);
+		sendMail(mailOptions);
+		res.send(200);
+});
+
 /* End Mail */
+
+/* Start Sms */
 
 function sendSms() {
 	request({
@@ -61,6 +74,8 @@ function sendSms() {
         	console.log(error);
     });
 }
+
+/* End Sms */
 
 router.use(function(req, res, next) {
  	console.log(req.method, req.url);
@@ -89,15 +104,7 @@ router.route('/userList')
 
 /* Email fonction */
 
-router.route('/sendMessage')
-	.post(function(req, res) {
-		console.log(req.body);
-		mailOptions.subject = req.body.title;
-		mailOptions.text = req.body.message;
-		console.log(mailOptions);
-		sendMail(mailOptions);
-		res.send(200);
-	});
+
 
 app.use('/', router);
 
