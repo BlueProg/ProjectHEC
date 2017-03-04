@@ -36,25 +36,35 @@
         </div>
         <form ng-submit="send()" name="myForm">
         <div class="row">
-            <div class="col-md-8">
-              <div class="row marginT15">
-                <div class="col-md-12">
-                  <label>Caractères restant: {{ 1 + validLength - dataTextarea.length }}</label>
-                  <textarea placeholder="Votre message" wm-block wm-block-length="validLength" ng-model="$parent.dataTextarea" class="form-control" rows="5" id="comment" required></textarea>
+          <div ng-show="data && data.dest"> 
+            <div class="col-md-4">
+              <div class="text-center">
+                <label class="marginR15">DESTINATAIRE</label><input ng-model="searchUser">
+              </div>
+              <div class="margin20">
+                <div id="teamCheckboxList" class="checkboxList">
+                  <div ng-repeat="user in data.dest | filter: searchUser">
+                    <label>
+                      <input class="margin5" type="checkbox" ng-model="elem.isChecked" />
+                      <span>{{user.name | uppercase}}</span>
+                    </label>
+                  </div>
                 </div>
               </div>
             </div>
-            <div ng-show="userList">
-              <div class="col-md-3">
+          </div>
+          <div ng-show="data && data.filter">
+            <div ng-repeat="filter in data.filter">
+              <div class="col-md-4">
                 <div class="text-center">
-                  <label class="marginR15">Destinataire:</label><input ng-model="searchUser">
+                  <label class="marginR15">{{filter.name | uppercase}}</label>
                 </div>
                 <div class="margin20">
                   <div id="teamCheckboxList" class="checkboxList">
-                    <div ng-repeat="user in userList | filter: searchUser">
+                    <div ng-repeat="data in filter.data">
                       <label>
-                        <input class="margin5" type="checkbox" ng-model="elem.isChecked" />
-                        <span>{{user.name}}</span>
+                        <input class="margin5" type="checkbox" ng-model="data.isChecked" />
+                        <span>{{data.name | uppercase}}</span>
                       </label>
                     </div>
                   </div>
@@ -62,21 +72,35 @@
               </div>
             </div>
           </div>
+        </div>
+        <div class="row">
+          <div class="col-md-2"></div>
+          <div class="col-md-8">
+            <div class="row marginT15">
+              <div class="col-md-12">
+                <label>Caractères restant: {{ 1 + validLength - dataTextarea.length }}</label>
+                <textarea placeholder="Votre message" wm-block wm-block-length="validLength" ng-model="$parent.dataTextarea" class="form-control" rows="5" id="comment" required></textarea>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-2"></div>
+        </div>
+        <div class="row">
           <div class="row marginT15">
+            <div class="col-md-2"></div>
             <div class="col-md-2">
               <button type="submit" class="btn btn-primary btn-lg">Envoyez le message</button>
             </div>
-            <div class="col-md-2">
-              
-            </div>
+            <div class="col-md-2"></div>
             <div class="col-md-2">
               <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal">Importez un excel</button>
             </div>
             <div class="col-md-2">
               <button ng-click="delete()" type="button" class="btn btn-danger btn-lg">Supprimez data</button>
             </div>
+            <div class="col-md-2"></div>
           </div>
-
+        </div>
         <!-- Modal -->
         <div id="myModal" class="modal fade" role="dialog">
           <div class="modal-dialog">

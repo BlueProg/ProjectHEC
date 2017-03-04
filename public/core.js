@@ -10,8 +10,8 @@ var scotchTodo = angular.module('scotchTodo', ['ngAnimate', 'ngSanitize', 'ui.bo
 
 	ServerCommunicationFactory.getUserList().then(function (result) {
 
-		if (result.data.length != 0)
-			$scope.userList = parseUser(result);
+		if (result.data.allData)
+			$scope.data = result.data;
 	});
 	
 
@@ -112,30 +112,33 @@ var scotchTodo = angular.module('scotchTodo', ['ngAnimate', 'ngSanitize', 'ui.bo
 		var data = {
 			"dest": [],
 			"filter": [],
-			"number": []
+			"number": [],
+			"allData": []
 		};
 		if ($scope.resultExcel) {
+			data.allData = $scope.resultExcel;
 			data.dest = parseUser($scope.modalDest, 1);
 			for (var i = $scope.modalFilter.length - 1; i >= 0; i--) {
+				if ($scope.modalFilter[i].isChecked) {
 					data.filter.push({
 						"name": $scope.modalFilter[i].nameColum,
-						"isChecked": false
+						data: parseList(data.allData, $scope.modalFilter[i].nameColum)
 					});
+				}
 			}
 			for (var i = $scope.modalNumber.length - 1; i >= 0; i--) {
 				if ($scope.modalNumber[i].isChecked) {
 					data.number.push({
 						"name": $scope.modalNumber[i].nameColum,
-						"isChecked": false
+						data: parseList(data.allData, $scope.modalNumber[i].nameColum)
 					});
 				}
 			}
 			ServerCommunicationFactory.addUserList(data).then(function(result) {
-				
+				$scope.data = data;
 				cleanImport();
 			});
 		}
-		console.log(data);
 	}
 
 	function cleanImport() {
@@ -176,19 +179,17 @@ var scotchTodo = angular.module('scotchTodo', ['ngAnimate', 'ngSanitize', 'ui.bo
 		return nameString;
 	}
 
-	function parseList(data) {
+	function parseList(data, type) {
 		var parseDiffList = [];
-		if (data.list) {
+		if (data) {
 			for (var i = data.length - 1; i >= 0; i--) {
-			for (var j = data[i].list.length - 1; j >= 0; j--) {
 				var find = false;
 				for (var k = parseDiffList.length - 1; k >= 0; k--) {
-					if (parseDiffList[k].name == data[i].list[j])
+					if (parseDiffList[k].name == data[i][type])
 						find = true;
 				}
 				if (find == false)
-					parseDiffList.push({"name" : data[i].list[j], "isChecked": false});	
-				}
+					parseDiffList.push({"name" : data[i][type], "isChecked": false});	
 			}
 		}
 		return parseDiffList;
