@@ -45,7 +45,7 @@
                 <div id="teamCheckboxList" class="checkboxList">
                   <div ng-repeat="user in data.dest | filter: searchUser">
                     <label>
-                      <input class="margin5" type="checkbox" ng-model="elem.isChecked" />
+                      <input class="margin5" type="checkbox" ng-model="user.isChecked" />
                       <span>{{user.name | uppercase}}</span>
                     </label>
                   </div>
@@ -63,7 +63,7 @@
                   <div id="teamCheckboxList" class="checkboxList">
                     <div ng-repeat="data in filter.data">
                       <label>
-                        <input class="margin5" type="checkbox" ng-model="data.isChecked" />
+                        <input class="margin5" type="checkbox" ng-model="data.isChecked" ng-change="selectUserList(data, filter)"/>
                         <span>{{data.name | uppercase}}</span>
                       </label>
                     </div>

@@ -29,20 +29,51 @@ var scotchTodo = angular.module('scotchTodo', ['ngAnimate', 'ngSanitize', 'ui.bo
 
 	};
 
-
+	$scope.userFilter = [];
 	$scope.showPage = function() {
 		return $scope.currentPage;
 	}
 
-	$scope.selectUserList = function($event) {
-		angular.forEach($scope.userList, function(value, key) {
-			if (value.list.includes($event.name)) {
-				if ($event.isChecked)
-					$scope.userList[key].isChecked = true;
-				else
-					$scope.userList[key].isChecked = false;
+	function	applyFilter() {
+		var find;
+		for (var i = $scope.data.dest.length - 1; i >= 0; i--) {
+			$scope.data.dest[i].isChecked = false;
+			find = false;
+			for (var j = $scope.data.dest[i].filtre.length - 1; j >= 0; j--) {
+				for (var k = $scope.data.filter.length - 1; k >= 0; k--) {
+					for (var l = $scope.data.filter[k].data.length - 1; l >= 0; l--) {
+						if ($scope.data.filter[k].data[l].isChecked && $scope.data.filter[k].data[l].name == $scope.data.dest[i].filtre[j]) {
+							$scope.data.dest[i].isChecked = true;
+							find = true;
+						}
+						if (find)
+							break;
+					}
+					if (find)
+						break;
+				}
+				if (find)
+					break;
 			}
-		})
+		}
+	}
+
+	$scope.selectUserList = function($event, data) {
+
+		for (var i = $scope.userFilter.length - 1; i >= 0; i--) {
+			if ($scope.userFilter[i].nameList == data.name) {
+				for (var j = $scope.userFilter[i].elemList.length - 1; j >= 0; j--) {
+					if ($scope.userFilter[i].elemList[j].name == $event.name) {
+						$scope.userFilter[i].elemList[j].isChecked = $event.isChecked;
+						return (applyFilter());
+					}
+				}
+				$scope.userFilter[i].elemList.push({'name': $event.name, 'isChecked': $event.isChecked});
+				return (applyFilter());
+			}
+		}
+		$scope.userFilter.push({'nameList': data.name, 'elemList' : [{'name': $event.name, 'isChecked': $event.isChecked}]});
+		return (applyFilter());
 	}
 
 	$scope.send = function() {
@@ -90,9 +121,9 @@ var scotchTodo = angular.module('scotchTodo', ['ngAnimate', 'ngSanitize', 'ui.bo
           });
         };
         reader.readAsBinaryString(changeEvent.target.files[0]);
-	 })
+	})
 
-	 $scope.modalClose = function() {
+	$scope.modalClose = function() {
 		cleanImport();
 	}
 
@@ -117,7 +148,7 @@ var scotchTodo = angular.module('scotchTodo', ['ngAnimate', 'ngSanitize', 'ui.bo
 		};
 		if ($scope.resultExcel) {
 			data.allData = $scope.resultExcel;
-			data.dest = parseUser($scope.modalDest, 1);
+			data.dest = parseUser($scope.modalDest, $scope.modalFilter);
 			for (var i = $scope.modalFilter.length - 1; i >= 0; i--) {
 				if ($scope.modalFilter[i].isChecked) {
 					data.filter.push({
@@ -148,20 +179,25 @@ var scotchTodo = angular.module('scotchTodo', ['ngAnimate', 'ngSanitize', 'ui.bo
 		$scope.renduType = null;
 	}
 
-	function parseUser(result, multi) {
+	function formatFilter(result, user) {
+		var filter = [];
+		for (var i = result.length - 1; i >= 0; i--) {
+			if (result[i].isChecked) {
+				filter.push(user[result[i].nameColum]);
+			}
+		}
+		return filter;
+	}
+
+	function parseUser(result, filter) {
 		var viewData = [];
 		var allData = $scope.resultExcel;
 		for (var i = allData.length - 1; i >= 0; i--) {
-			if (multi == 1) {
+			if (filter) {
 				viewData.push({
 					"name": formatName(result, allData[i]),
-					"isChecked": false
-				});	
-			}
-			else {
-				viewData.push({
-					"name": allData[i],
-					"isChecked": false
+					"isChecked": false,
+					"filtre": formatFilter(filter, allData[i])
 				});	
 			}
 		}
