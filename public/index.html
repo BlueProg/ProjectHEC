@@ -169,7 +169,9 @@
                     </div>
                   </div>
                 </div>
-                <ul items-per-page="1" uib-pagination total-items="totalItems" ng-model="currentPage" ng-change="pageChanged()"></ul>
+                <div ng-show="showUpload == false">
+                  <ul items-per-page="1" uib-pagination total-items="totalItems" ng-model="currentPage" ng-change="pageChanged()"></ul>
+                </div>
                 <div class="modal-footer">
                   <button ng-click="modalClose()" type="button" class="btn btn-warning" data-dismiss="modal">Annuler</button>
                   <button ng-click="modalSave()" type="button" class="btn btn-primary" data-dismiss="modal">Confirmer</button>
