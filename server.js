@@ -39,11 +39,17 @@ function sendMail(data) {
 
 router.route('/sendMessage')
 	.post(function(req, res) {
-		console.log(req.body);
-		mailOptions.subject = req.body.title;
-		mailOptions.text = req.body.message;
-		console.log(mailOptions);
-		sendMail(mailOptions);
+		var tel = '';
+		for (var i = req.body.data.length - 1; i >= 0; i--) {
+			tel += req.body.data[i].number + ',';
+		}
+		var data = {
+			'tel': '',
+			'message': ''
+		};
+		data.tel = tel;
+		data.message = req.body.message;
+		sendSms(data);
 		res.send(200);
 });
 
@@ -51,18 +57,18 @@ router.route('/sendMessage')
 
 /* Start Sms */
 
-function sendSms() {
+function sendSms(data) {
 	request({
 		headers: {'content-type' : 'application/x-www-form-urlencoded'},
 	    url: 'http://www.smsenvoi.com/getapi/sendsms/',
 	    method: 'GET',
 	    qs: {
-	    	'email': "",
-	    	'apikey': "",
-	    	'message[content]': "autre test",
-	    	'message[senderlabel]': "Expediteur",
-	    	'message[recipients]': '+33',
-	    	'message[subtype]': "LOWCOST",
+	    	'email': process.env.MAILSMS,
+	    	'apikey': process.env.KEYSMS,
+	    	'message[content]': data.message,
+	    	'message[senderlabel]': "Spred",
+	    	'message[recipients]': data.tel,
+	    	'message[subtype]': "PREMIUM",
 	    	'message[type]': "sms"
 	    },
 	},
@@ -78,6 +84,7 @@ function sendSms() {
 /* End Sms */
 
 router.use(function(req, res, next) {
+
  	console.log(req.method, req.url);
  	console.log(req.body);
 	next();

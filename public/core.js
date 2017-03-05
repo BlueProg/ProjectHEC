@@ -77,9 +77,15 @@ var scotchTodo = angular.module('scotchTodo', ['ngAnimate', 'ngSanitize', 'ui.bo
 	}
 
 	$scope.send = function() {
-		ServerCommunicationFactory.sendMessage({"title" : $scope.dataText, "message" : $scope.dataTextarea}).then(function(result) {
+
+		var data = [];
+		for (var i = $scope.data.dest.length - 1; i >= 0; i--) {
+			if ($scope.data.dest[i].isChecked) {
+				data.push($scope.data.dest[i]);
+			}
+		}
+		ServerCommunicationFactory.sendMessage({"message" : $scope.dataTextarea, "data": data}).then(function(result) {
 			if (result == 200) {
-				$scope.dataText = "";
 				$scope.dataTextarea = "";	
 			}
 		});
@@ -147,8 +153,8 @@ var scotchTodo = angular.module('scotchTodo', ['ngAnimate', 'ngSanitize', 'ui.bo
 			"allData": []
 		};
 		if ($scope.resultExcel) {
-			data.allData = $scope.resultExcel;
-			data.dest = parseUser($scope.modalDest, $scope.modalFilter);
+			data.allData = angular.copy($scope.resultExcel);
+			data.dest = parseUser($scope.modalDest, $scope.modalFilter, $scope.modalNumber);
 			for (var i = $scope.modalFilter.length - 1; i >= 0; i--) {
 				if ($scope.modalFilter[i].isChecked) {
 					data.filter.push({
@@ -189,19 +195,30 @@ var scotchTodo = angular.module('scotchTodo', ['ngAnimate', 'ngSanitize', 'ui.bo
 		return filter;
 	}
 
-	function parseUser(result, filter) {
+	function parseUser(result, filter, number) {
 		var viewData = [];
-		var allData = $scope.resultExcel;
+		var allData = angular.copy($scope.resultExcel);
 		for (var i = allData.length - 1; i >= 0; i--) {
 			if (filter) {
 				viewData.push({
 					"name": formatName(result, allData[i]),
 					"isChecked": false,
-					"filtre": formatFilter(filter, allData[i])
+					"filtre": formatFilter(filter, allData[i]),
+					"number": formatNumber(number, allData[i])
 				});	
 			}
 		}
 		return viewData;
+	}
+
+	function formatNumber(list, user) {
+		var numberString = "";
+		for (var i = list.length - 1; i >= 0; i--) {
+			if (list[i].isChecked) {
+				numberString = user[list[i].nameColum];
+			}
+		}
+		return numberString;
 	}
 
 	function formatName(format, object) {
