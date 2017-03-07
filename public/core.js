@@ -3,8 +3,7 @@ var scotchTodo = angular.module('scotchTodo', ['ngAnimate', 'ngSanitize', 'ui.bo
 
 .controller('SpredController', function ($scope, $http, ServerCommunicationFactory) {
 	$scope.userList = [];
-	$scope.validLength = 139;
-	$scope.validTitleLength = 19;
+	$scope.validLength = 159;
 	$scope.diffList = [];
 	$scope.showUpload = true;
 
