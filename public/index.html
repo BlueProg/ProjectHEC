@@ -32,7 +32,7 @@
 
         <!-- HEADER AND TODO COUNT -->
         <div class="jumbotron text-center">
-            <h1>SPRED</h1>
+            <h1>SPRED<img class="marginL65" src="spred.png"></h1>
         </div>
         <form ng-submit="send()" name="myForm">
         <div class="row">
@@ -135,14 +135,14 @@
               </div>
               <div class="modal-body">
                 <div ng-show="showUpload" class="excelMargin">
-                  <p>Selectionner un fichier .xls, .xlsx, .ods</p>
+                  <p>Sélectionner un fichier .xls, .xlsx, .ods</p>
                   <input id="inputExcell" type="file" accept=".xls,.xlsx,.ods" multiple="false" />
                 </div>
                 <div ng-show="showUpload == false">
                   <div ng-show="showPage() == 1">
                     <div class="row">
                       <div class="col-md-12">
-                        <p class="textExcel">Selectionner la/les colonne(s) reference(s) pour <b class="sizeUp">destinataire</b></p>
+                        <p class="textExcel">Selectionner la/les colonne(s) référence(s) pour <b class="sizeUp">destinataire</b></p>
                         <div class="marginT15 marginB15">
                           <div ng-repeat="type in modalDest">
                             <div ng-show="type.nameColum != 'isChecked'">
