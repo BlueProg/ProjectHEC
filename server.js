@@ -58,7 +58,7 @@ router.route('/sendMessage')
 /* Start Sms */
 
 function sendSms(data) {
-	/*request({
+	request({
 		headers: {'content-type' : 'application/x-www-form-urlencoded'},
 	    url: 'http://www.smsenvoi.com/getapi/sendsms/',
 	    method: 'GET',
@@ -78,7 +78,7 @@ function sendSms(data) {
         }
         else
         	console.log(error);
-    });*/
+    });
 }
 
 /* End Sms */
