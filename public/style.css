@@ -15,8 +15,16 @@ textarea {
 	margin-right: 15px !important;
 }
 
+.marginR5 {
+	margin-right: 5px !important;
+}
+
 .marginT15 {
 	margin-top: 15px !important;
+}
+
+.marginB15 {
+	margin-bottom: 15px !important;
 }
 
 .checkboxList {
@@ -27,3 +35,26 @@ textarea {
     overflow-y: scroll;
 }
 
+.excelMargin {
+	margin: 10px;
+    margin-bottom: 20px;
+}
+
+.textExcel {
+	text-align: center;
+    font-size: large;
+}
+
+.sizeUp {
+	font-size: larger;
+}
+
+.arangeItem {
+	float: left;
+    width: 40%;
+    margin-left: 10%;
+}
+
+.textCenter {
+    text-align: center;
+}

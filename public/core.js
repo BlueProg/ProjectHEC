@@ -76,24 +76,42 @@ var scotchTodo = angular.module('scotchTodo', ['ngAnimate', 'ngSanitize', 'ui.bo
 		return (applyFilter());
 	}
 
+	$scope.confirmSend = function() {
+		var data = [];
+		if ($scope.data && $scope.data.dest) {
+			for (var i = $scope.data.dest.length - 1; i >= 0; i--) {
+				if ($scope.data.dest[i].isChecked) {
+					data.push($scope.data.dest[i]);
+				}
+			}
+			ServerCommunicationFactory.sendMessage({"message" : $scope.dataTextarea, "data": data}).then(function(result) {
+				if (result == 200) {
+					$scope.dataTextarea = "";	
+				}
+			});
+		}
+	}
+
 	$scope.send = function() {
 
 		var data = [];
-		for (var i = $scope.data.dest.length - 1; i >= 0; i--) {
-			if ($scope.data.dest[i].isChecked) {
-				data.push($scope.data.dest[i]);
+		if ($scope.dataTextarea.length > 0)
+			$('#confirmModal').modal('show');
+		if ($scope.data && $scope.data.dest) {
+			for (var i = $scope.data.dest.length - 1; i >= 0; i--) {
+				if ($scope.data.dest[i].isChecked) {
+					data.push($scope.data.dest[i]);
+				}
 			}
+			$scope.dataCount = data;
 		}
-		ServerCommunicationFactory.sendMessage({"message" : $scope.dataTextarea, "data": data}).then(function(result) {
-			if (result == 200) {
-				$scope.dataTextarea = "";	
-			}
-		});
 	}
 
 	$scope.delete = function() {
 		ServerCommunicationFactory.deleteData().then(function(result) {
 			$scope.userList = result.data;
+			$scope.data = "";
+			cleanImport();
 		});
 	}
 

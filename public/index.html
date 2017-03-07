@@ -89,18 +89,40 @@
           <div class="row marginT15">
             <div class="col-md-2"></div>
             <div class="col-md-2">
-              <button type="submit" class="btn btn-primary btn-lg">Envoyez le message</button>
+              <button type="submit" class="btn btn-primary btn-lg">Envoyer le message</button>
             </div>
             <div class="col-md-2"></div>
             <div class="col-md-2">
-              <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal">Importez un excel</button>
+              <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal">Importer un excel</button>
             </div>
             <div class="col-md-2">
-              <button ng-click="delete()" type="button" class="btn btn-danger btn-lg">Supprimez data</button>
+              <button ng-click="delete()" type="button" class="btn btn-danger btn-lg">Supprimer data</button>
             </div>
             <div class="col-md-2"></div>
           </div>
         </div>
+
+        <!-- Modal -->
+        <div class="modal fade" id="confirmModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Confirmer</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                Confirmer l'envoi de {{ dataCount.length}} message(s).
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+                <button type="button" class="btn btn-primary" ng-click="confirmSend()">Envoyer</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <!-- Modal -->
         <div id="myModal" class="modal fade" role="dialog">
           <div class="modal-dialog">
@@ -109,45 +131,51 @@
             <div class="modal-content">
               <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title">Importez un excel</h4>
+                <h4 class="modal-title">Importer excel</h4>
               </div>
               <div class="modal-body">
-                <div ng-show="showUpload">
-                  <p>Selectionnez votre fichier .xls, .xlsx, .ods</p>
+                <div ng-show="showUpload" class="excelMargin">
+                  <p>Selectionner un fichier .xls, .xlsx, .ods</p>
                   <input id="inputExcell" type="file" accept=".xls,.xlsx,.ods" multiple="false" />
                 </div>
                 <div ng-show="showUpload == false">
                   <div ng-show="showPage() == 1">
                     <div class="row">
-                      <div class="col-md-6">
-                        <p>Selectionnez la/les colonne(s) reference(s) pour destinataire</p>
-                        <div ng-repeat="type in modalDest">
-                          <div ng-show="type.nameColum != 'isChecked'">
-                            <label>
-                              <input ng-change="changeRenduType()" type="checkbox" ng-model="type.isChecked"/>
-                              <span>{{type.nameColum}}</span>
-                            </label>
+                      <div class="col-md-12">
+                        <p class="textExcel">Selectionner la/les colonne(s) reference(s) pour <b class="sizeUp">destinataire</b></p>
+                        <div class="marginT15 marginB15">
+                          <div ng-repeat="type in modalDest">
+                            <div ng-show="type.nameColum != 'isChecked'">
+                              <label class="arangeItem">
+                                <input class="marginR5" ng-change="changeRenduType()" type="checkbox" ng-model="type.isChecked"/>
+                                <span>{{type.nameColum}}</span>
+                              </label>
+                            </div>
                           </div>
                         </div>
                       </div>
                       <div ng-show="renduType">
-                        <div class="col-md-6">
-                          <p>Exemple de rendu</p>
-                          <p>{{renduType}}</p>
+                        <div class="col-md-12">
+                          <div class="marginT15 textCenter">
+                            <p>Exemple de rendu</p>
+                            <p><b class="sizeUp">{{renduType}}</b></p>
+                          </div>
                         </div>  
                       </div>
                     </div>
                   </div>
                   <div ng-show="showPage() == 2">
                     <div class="row">
-                      <div class="col-md-6">
-                        <p>Selectionnez la/les colonne(s) reference(s) pour les filtres</p>
-                        <div ng-repeat="type in modalFilter">
-                          <div ng-show="type.nameColum != 'isChecked'">
-                            <label>
-                              <input type="checkbox" ng-model="type.isChecked"/>
-                              <span>{{type.nameColum}}</span>
-                            </label>
+                      <div class="col-md-12">
+                        <p class="textExcel">Selectionnez la/les colonne(s) reference(s) pour les <b class="sizeUp">filtres</b></p>
+                        <div class="marginT15 marginB15">
+                          <div ng-repeat="type in modalFilter">
+                            <div ng-show="type.nameColum != 'isChecked'">
+                              <label class="arangeItem">
+                                <input class="marginR5" type="checkbox" ng-model="type.isChecked"/>
+                                <span>{{type.nameColum}}</span>
+                              </label>
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -155,21 +183,23 @@
                   </div>
                   <div ng-show="showPage() == 3">
                     <div class="row">
-                      <div class="col-md-6">
-                        <p>Selectionnez la colonne pour le numéro de mobile</p>
-                        <div ng-repeat="type in modalNumber">
-                          <div ng-show="type.nameColum != 'isChecked'">
-                            <label>
-                              <input type="checkbox" ng-model="type.isChecked"/>
-                              <span>{{type.nameColum}}</span>
-                            </label>
+                      <div class="col-md-12">
+                        <p class="textExcel">Selectionnez la colonne pour le numéro de <b class="sizeUp">mobile</b></p>
+                        <div class="marginT15 marginB15">
+                          <div ng-repeat="type in modalNumber">
+                            <div ng-show="type.nameColum != 'isChecked'">
+                              <label class="arangeItem">
+                                <input class="marginR5" type="checkbox" ng-model="type.isChecked"/>
+                                <span>{{type.nameColum}}</span>
+                              </label>
+                            </div>
                           </div>
                         </div>
                       </div>
                     </div>
                   </div>
                 </div>
-                <div ng-show="showUpload == false">
+                <div class="textCenter" ng-show="showUpload == false">
                   <ul items-per-page="1" uib-pagination total-items="totalItems" ng-model="currentPage" ng-change="pageChanged()"></ul>
                 </div>
                 <div class="modal-footer">
