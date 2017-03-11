@@ -1,120 +1,45 @@
-var request = require('request');
 var express = require('express');
 var app = express();
-var bodyParser = require('body-parser'); // pull information from HTML POST (express4)
-var methodOverride = require('method-override'); // simulate DELETE and PUT (express4)
 var router = express.Router();
-const nodemailer = require('nodemailer');
+var mongoose = require('mongoose');
+var bodyParser = require('body-parser');
+var cookieParser = require('cookie-parser');
+var session = require('express-session');
+var http = require('http');
+var url = process.env.MONGODB_URI;
+mongoose.connect(url);
 
-app.use(express.static(__dirname + '/public'));
-app.use(bodyParser.json());
+var authController = require('./controllers/authController');
+var mainController = require('./controllers/mainController');
 
-var userList = [];
+var db = mongoose.connection;
+db.on('error', console.error.bind(console, 'connection error'));
+db.once('open', function () {
 
-/* Start Mail */
+  app.use(express.static(__dirname + '/public'));
+  app.use(bodyParser.urlencoded({ extended: false }))
+  app.use(bodyParser.json());
+  app.use(cookieParser())
+  app.use(session({secret: 'keyboard cat'}))
+  app.set('views', __dirname + '/views');
+  app.set('view engine', 'jade');
 
-let transporter = nodemailer.createTransport({
-	service: 'gmail',
-	auth: {
-		user: '',
-		pass: ''
-	}
-});
-
-var mailOptions = {
-    from: '"Fred Foo 👻" <foo@blurdybloop.com>',
-    to: 'exampleEmail@yopmail.com',
-    subject: 'Hello ✔',
-    text: 'Hello world ?'
-};
-
-function sendMail(data) {
-	transporter.sendMail(data, (error, info) => {
-	    if (error) {
-	        return console.log(error);
-	    }
-	    console.log('Message %s sent: %s', info.messageId, info.response);
-	});	
-}
-
-router.route('/sendMessage')
-	.post(function(req, res) {
-		var tel = '';
-		for (var i = req.body.data.length - 1; i >= 0; i--) {
-			tel += req.body.data[i].number + ',';
-		}
-		var data = {
-			'tel': '',
-			'message': ''
-		};
-		data.tel = tel;
-		data.message = req.body.message;
-		sendSms(data);
-		res.send(200);
-});
-
-/* End Mail */
-
-/* Start Sms */
-
-function sendSms(data) {
-	request({
-		headers: {'content-type' : 'application/x-www-form-urlencoded'},
-	    url: 'http://www.smsenvoi.com/getapi/sendsms/',
-	    method: 'GET',
-	    qs: {
-	    	'email': process.env.MAILSMS,
-	    	'apikey': process.env.KEYSMS,
-	    	'message[content]': data.message,
-	    	'message[senderlabel]': "Spred",
-	    	'message[recipients]': data.tel,
-	    	'message[subtype]': "PREMIUM",
-	    	'message[type]': "sms"
-	    },
-	},
-    function (error, response, body) {
-    	if (!error && response.statusCode == 200) {
-            console.log(body)
-        }
-        else
-        	console.log(error);
-    });
-}
-
-/* End Sms */
-
-router.use(function(req, res, next) {
-
- 	console.log(req.method, req.url);
- 	console.log(req.body);
-	next();
+  app.use(function (req, res, next) {
+      console.log('----------- request receved -----------');
+      console.log(req.method, req.url);
+      console.log(req.body);
+      console.log('----------- request start -----------');
+      var err = req.session.error,
+          msg = req.session.success;
+      delete req.session.error;
+      delete req.session.success;
+      res.locals.message = '';
+      if (err) res.locals.message = '<p class="msg error">' + err + '</p>';
+      if (msg) res.locals.message = '<p class="msg success">' + msg + '</p>';
+      next();
+  });
+  app.use('/auth', authController);
+  app.use('/', mainController);
+  http.createServer(app).listen(3000);
 })
 
-router.get('/', function(req, res) {
-	res.sendfile('./public/index.html');
-});
-
-router.route('/userList')
-	.get(function(req, res) {
-		res.json(userList);
-	})
-	.post(function(req, res) {
-
-		userList = req.body;
-		res.send(userList);
-	})
-	.delete(function(req, res) {
-
-		userList = [];
-		res.send(userList);
-	});
-
-/* Email fonction */
-
-
-
-app.use('/', router);
-
-app.listen(process.env.PORT || 8080);
-
-console.log("App listening on port 8080");

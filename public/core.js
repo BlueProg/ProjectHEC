@@ -1,5 +1,29 @@
+var scotchTodo = angular.module('scotchTodo', ['ngAnimate', 'ngSanitize', 'ui.bootstrap', 'ui.router'])
 
-var scotchTodo = angular.module('scotchTodo', ['ngAnimate', 'ngSanitize', 'ui.bootstrap'])
+
+scotchTodo.config(function($stateProvider) {
+  var helloState = {
+    name: 'main',
+    url: '/mainUrl',
+    templateUrl: 'main.html'
+  }
+
+  var aboutState = {
+    name: 'login',
+    url: '/login',
+    templateUrl: 'login.html'
+  }
+
+  var otherwise = {
+  	name: 'otherwise',
+    url: '*path',
+    templateUrl: 'login.html'
+  }
+
+  $stateProvider.state(helloState);
+  $stateProvider.state(aboutState);
+  $stateProvider.state(otherwise);
+})
 
 .controller('SpredController', function ($scope, $http, ServerCommunicationFactory) {
 	$scope.userList = [];
@@ -13,7 +37,7 @@ var scotchTodo = angular.module('scotchTodo', ['ngAnimate', 'ngSanitize', 'ui.bo
 			$scope.data = result.data;
 	});
 	
-
+	$scope.title = 'SPRED !';
 	$scope.totalItems = 3;
 	$scope.currentPage = 1;
 	$scope.modalDest = '';
@@ -280,6 +304,7 @@ var scotchTodo = angular.module('scotchTodo', ['ngAnimate', 'ngSanitize', 'ui.bo
 		return $http.delete('/userList');
 	},
 	factory.sendMessage = function(data) {
+		console.log('sendMessage');
 		return $http.post('/sendMessage', data);
 	}
 	return factory;
