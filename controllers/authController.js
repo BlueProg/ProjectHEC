@@ -122,14 +122,15 @@ router.post("/signup", userExist, function (req, res) {
 
 router.get("/login", function (req, res) {
       console.log('path get /login');
-
-    res.render("login");
+    console.log(req.session);
+    //res.render("login");
+    res.send(req.session);
 });
 
 router.post("/login", function (req, res) {
       console.log('path post /login');
-
-    authenticate(req.body.username, req.body.password, function (err, user) {
+      console.log(req.body)
+    authenticate(req.body.name, req.body.pass, function (err, user) {
         if (user) {
 
             req.session.regenerate(function () {
@@ -140,7 +141,7 @@ router.post("/login", function (req, res) {
             });
         } else {
             req.session.error = 'Authentication failed, please check your ' + ' username and password.';
-            res.redirect('/login');
+            res.redirect('/auth/login');
         }
     });
 });

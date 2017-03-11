@@ -6,7 +6,8 @@ var bodyParser = require('body-parser');
 var cookieParser = require('cookie-parser');
 var session = require('express-session');
 var http = require('http');
-var url = process.env.MONGODB_URI;
+var config = require('./config');
+var url = process.env.MONGODB_URI | config.mongodb;
 mongoose.connect(url);
 
 var authController = require('./controllers/authController');
@@ -29,13 +30,6 @@ db.once('open', function () {
       console.log(req.method, req.url);
       console.log(req.body);
       console.log('----------- request start -----------');
-      var err = req.session.error,
-          msg = req.session.success;
-      delete req.session.error;
-      delete req.session.success;
-      res.locals.message = '';
-      if (err) res.locals.message = '<p class="msg error">' + err + '</p>';
-      if (msg) res.locals.message = '<p class="msg success">' + msg + '</p>';
       next();
   });
   app.use('/auth', authController);
