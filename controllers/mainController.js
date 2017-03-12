@@ -88,23 +88,21 @@ function sendSms(data) {
 	},
     function (error, response, body) {
     	if (!error && response.statusCode == 200) {
-            console.log('body');
-            console.log(body)
-
-            if (body.success == 1) {
+			var resData = JSON.parse(body);
+            if (resData.success) {
 	            	smsSend = new SmsSend({
 					expeditor: data.expeditor,
 					message: data.message,
-					idSend: body.message_id
+					idSend: resData.message_id
 	            }).save(function(err, data) {
 	            	if (err)
 	            		console.log('Error save smsSend: ', err);
 	            	else
-	            		console.log(data);
+	            		console.log(resData);
 	            })
             }
             else
-	            console.log('error smsSend', body);
+	            console.log('error smsSend', resData);
         }
         else
         	console.log(error);
