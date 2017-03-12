@@ -88,7 +88,9 @@ function sendSms(data) {
 	},
     function (error, response, body) {
     	if (!error && response.statusCode == 200) {
+            console.log('body');
             console.log(body)
+
             if (body.success == 1) {
 	            	smsSend = new SmsSend({
 					expeditor: data.expeditor,
@@ -101,6 +103,8 @@ function sendSms(data) {
 	            		console.log(data);
 	            })
             }
+            else
+	            console.log('error smsSend', body);
         }
         else
         	console.log(error);
