@@ -5,6 +5,10 @@ var methodOverride = require('method-override'); // simulate DELETE and PUT (exp
 var router = express.Router();
 var request = require('request');
 
+var path = require('path');
+var SmsSend = require(path.resolve( __dirname, '../models/smsSend'));
+
+
 router.use(bodyParser.json());
 var userList = [];
 router.route('/sendMessage')
@@ -19,13 +23,14 @@ router.route('/sendMessage')
 		};
 		data.tel = tel;
 		data.message = req.body.message;
+		data.expeditor = req.body.expeditor;
 		sendSms(data);
 		res.send(200);
 	});
 
 router.get('/', function(req, res) {
 	console.log('get /');
-	res.sendfile('./public/home.html');
+	res.sendfile('./public/index.html');
 });
 
 router.route('/userList')
@@ -75,7 +80,7 @@ function sendSms(data) {
 	    	'email': process.env.MAILSMS,
 	    	'apikey': process.env.KEYSMS,
 	    	'message[content]': data.message,
-	    	'message[senderlabel]': "Spred",
+	    	'message[senderlabel]': data.expeditor,
 	    	'message[recipients]': data.tel,
 	    	'message[subtype]': "PREMIUM",
 	    	'message[type]': "sms"
@@ -84,6 +89,18 @@ function sendSms(data) {
     function (error, response, body) {
     	if (!error && response.statusCode == 200) {
             console.log(body)
+            if (body.success == 1) {
+	            	smsSend = new SmsSend({
+					expeditor: data.expeditor,
+					message: data.message,
+					idSend: body.message_id
+	            }).save(function(err, data) {
+	            	if (err)
+	            		console.log('Error save smsSend: ', err);
+	            	else
+	            		console.log(data);
+	            })
+            }
         }
         else
         	console.log(error);

@@ -23,14 +23,14 @@ var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error'));
 db.once('open', function () {
 
-  app.use(express.static(__dirname + '/public'));
+
   app.use(bodyParser.urlencoded({ extended: false }))
   app.use(bodyParser.json());
   app.use(cookieParser())
   app.use(session({secret: 'keyboard cat'}))
-  app.set('views', __dirname + '/views');
-  app.set('view engine', 'jade');
-
+  app.use('/auth', authController);
+  app.use('/', mainController);
+  app.use(express.static(__dirname + '/public'));
   app.use(function (req, res, next) {
       console.log('----------- request receved -----------');
       console.log(req.method, req.url);
@@ -38,8 +38,5 @@ db.once('open', function () {
       console.log('----------- request start -----------');
       next();
   });
-  app.use('/auth', authController);
-  app.use('/', mainController);
   http.createServer(app).listen(process.env.PORT || 3000);
 })
-

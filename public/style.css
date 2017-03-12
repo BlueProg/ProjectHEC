@@ -62,3 +62,7 @@ textarea {
 .textCenter {
     text-align: center;
 }
+
+#footerplace {
+	height: 100px;
+}

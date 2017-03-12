@@ -48,6 +48,10 @@
     <div class="col-md-8">
       <div class="row marginT15">
         <div class="col-md-12">
+          <label class="marginR15">Nom d'expéditeur:</label>
+          <input type="text" placeholder="Nom d'expéditeur" name="" ng-model="expeditor"></input>
+        </div>
+        <div class="col-md-12 marginT15">
           <label>Caractères restant: {{ 1 + validLength - dataTextarea.length }}</label>
           <textarea placeholder="Votre message" wm-block wm-block-length="validLength" ng-model="$parent.dataTextarea" class="form-control" rows="5" id="comment" required></textarea>
         </div>
@@ -180,4 +184,5 @@
       </div>
     </div>
   </div>
+  <div id="footerplace"></div>
 </div>

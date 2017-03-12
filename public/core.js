@@ -37,7 +37,7 @@ scotchTodo.config(function($stateProvider) {
 			$scope.data = result.data;
 	});
 	
-	$scope.title = 'SPRED !';
+	$scope.title = 'Spred';
 	$scope.totalItems = 3;
 	$scope.currentPage = 1;
 	$scope.modalDest = '';
@@ -107,10 +107,11 @@ scotchTodo.config(function($stateProvider) {
 					data.push($scope.data.dest[i]);
 				}
 			}
-			ServerCommunicationFactory.sendMessage({"message" : $scope.dataTextarea, "data": data}).then(function(result) {
+			ServerCommunicationFactory.sendMessage({"message" : $scope.dataTextarea, "data": data, "expeditor": $scope.expeditor}).then(function(result) {
 				if (result == 200) {
 					$scope.dataTextarea = "";	
 				}
+				$('#confirmModal').modal('hide');
 			});
 		}
 	}
