@@ -7,21 +7,21 @@ scotchTodo.config(function($stateProvider) {
     url: '/mainUrl',
     templateUrl: 'main.html'
   }
-
+/*
   var aboutState = {
     name: 'login',
     url: '/login',
     templateUrl: 'login.html'
-  }
+  }*/
 
   var otherwise = {
   	name: 'otherwise',
     url: '*path',
-    templateUrl: 'login.html'
+    templateUrl: 'main.html'
   }
 
   $stateProvider.state(helloState);
-  $stateProvider.state(aboutState);
+  //$stateProvider.state(aboutState);
   $stateProvider.state(otherwise);
 })
 
@@ -112,8 +112,26 @@ scotchTodo.config(function($stateProvider) {
 					$scope.dataTextarea = "";	
 				}
 				$('#confirmModal').modal('hide');
+				toastr.options = {
+					  "closeButton": true,
+					  "debug": false,
+					  "newestOnTop": false,
+					  "progressBar": false,
+					  "positionClass": "toast-top-center",
+					  "preventDuplicates": false,
+					  "onclick": null,
+					  "showDuration": "300",
+					  "hideDuration": "1000",
+					  "timeOut": "8000",
+					  "extendedTimeOut": "1000",
+					  "showEasing": "swing",
+					  "hideEasing": "linear",
+					  "showMethod": "fadeIn",
+					  "hideMethod": "fadeOut"
+					}
+			  	toastr.success('Message envoyé avec succès !');
 			});
-		}
+		}1
 	}
 
 	$scope.send = function() {
