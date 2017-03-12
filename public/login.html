@@ -158,13 +158,13 @@
 							</form>
 							<form name="register_form" id="register-form" role="form" style="display: none;">
 								<div class="form-group">
-									<input ng-model="reg.name" type="text" name="username" id="username" tabindex="1" class="form-control" placeholder="Username" value="" required="true">
+									<input ng-model="user.reg_name" type="text" name="reg_name" id="reg_name" tabindex="1" class="form-control" placeholder="Username" value="" required="true">
 								</div>
 								<div class="form-group">
-									<input ng-model="reg.email" type="email" name="email" id="email" tabindex="1" class="form-control" placeholder="Email Address" value="" required="true">
+									<input ng-model="user.reg_email" type="email" name="reg_email" id="reg_email" tabindex="1" class="form-control" placeholder="Email Address" value="" required="true">
 								</div>
 								<div class="form-group">
-									<input ng-model="reg_pass" type="password" name="reg_pass" id="reg_pass" tabindex="2" class="form-control" placeholder="Password" required="true">
+									<input ng-model="user.reg_pass" type="password" name="reg_pass" id="reg_pass" tabindex="2" class="form-control" placeholder="Password" required="true">
 								</div>
 								<div class="form-group">
 									<input ng-model="reg_confpass" type="password" name="reg_confpass" id="reg_confpass" tabindex="2" class="form-control" placeholder="Confirm Password" required="true" pw-check="reg_pass">
@@ -175,7 +175,7 @@
 								<div class="form-group">
 									<div class="row">
 										<div class="col-sm-6 col-sm-offset-3">
-											<input ng-click="register(reg)" type="submit" name="register-submit" id="register-submit" tabindex="4" class="form-control btn btn-register" value="Register Now">
+											<input ng-click="register(user)" type="submit" name="register-submit" id="register-submit" tabindex="4" class="form-control btn btn-register" value="Register Now">
 										</div>
 									</div>
 								</div>

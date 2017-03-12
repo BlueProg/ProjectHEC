@@ -89,8 +89,9 @@ router.get("/signup", function (req, res) {
 router.post("/signup", userExist, function (req, res) {
     console.log('path post /signup');
     console.log(req.body);
-    var password = req.body.password;
-    var username = req.body.username;
+    var password = req.body.pass;
+    var username = req.body.name;
+    var email = req.body.email;
     console.log(password);
     console.log(username);
     hash(password, function (err, salt, hash) {
@@ -99,6 +100,7 @@ router.post("/signup", userExist, function (req, res) {
         console.log(password);
         var user = new User({
             username: username,
+            email: email,
             salt: salt,
             hash: hash,
         }).save(function (err, newUser) {

@@ -6,12 +6,18 @@ var bodyParser = require('body-parser');
 var cookieParser = require('cookie-parser');
 var session = require('express-session');
 var http = require('http');
-var config = require('./config');
-var url = process.env.MONGODB_URI | config.mongodb;
-mongoose.connect(url);
-
+var url = '';
 var authController = require('./controllers/authController');
 var mainController = require('./controllers/mainController');
+
+try {
+    var config = require('./config');
+    url = config.mongodb;
+} catch (ex) {
+    url = process.env.MONGODB_URI;
+}
+
+mongoose.connect(url);
 
 var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error'));
