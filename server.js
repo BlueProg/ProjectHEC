@@ -28,7 +28,7 @@ db.once('open', function () {
   app.use(bodyParser.json());
   app.use(cookieParser())
   app.use(session({secret: 'keyboard cat'}))
-  app.use('/auth', authControler);
+  app.use('/auth', authController);
   app.use('/', mainController);
   app.use(express.static(__dirname + '/public'));
   app.use(function (req, res, next) {
@@ -39,4 +39,5 @@ db.once('open', function () {
       next();
   });
   http.createServer(app).listen(process.env.PORT || 3000);
+  console.log('Server started on port ' + (process.env.PORT || 3000));
 })
