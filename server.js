@@ -28,7 +28,7 @@ db.once('open', function () {
   app.use(bodyParser.json());
   app.use(cookieParser())
   app.use(session({secret: 'keyboard cat'}))
-  app.use('/auth', authController);
+  app.use('/auth', authControler);
   app.use('/', mainController);
   app.use(express.static(__dirname + '/public'));
   app.use(function (req, res, next) {
