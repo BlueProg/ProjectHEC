@@ -26,8 +26,7 @@ db.once('open', function () {
 
   app.use(bodyParser.urlencoded({ extended: false }))
   app.use(bodyParser.json());
-  app.use(cookieParser())
-  app.use(session({secret: 'keyboard cat'}))
+  app.set('superSecret', config.secretJwt || process.env.SECRETJWT);
   app.use('/auth', authController);
   app.use('/', mainController);
   app.use(express.static(__dirname + '/public'));

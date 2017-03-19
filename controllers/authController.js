@@ -1,19 +1,18 @@
 var express    = require('express');
 var bodyParser = require('body-parser');
-var cookieParser = require('cookie-parser');
 var path = require('path');
 var http = require('http'),
     hash = require('./pass').hash;
 var router = express.Router();
 var User = require(path.resolve( __dirname, '../models/user'));
+var jwt    = require('jsonwebtoken'); // used to create, sign, and verify tokens
 
-function authenticate(name, pass, fn) {
+function authenticate(email, pass, fn) {
 
     console.log('authenticate');
 
-    if (!module.parent) console.log('authenticating %s:%s', name, pass);
     User.findOne({
-        username: name
+        email: email
     },
 
     function (err, user) {
@@ -29,69 +28,28 @@ function authenticate(name, pass, fn) {
             return fn(new Error('cannot find user'));
         }
     });
-
 }
 
-function requiredAuthentication(req, res, next) {
-
-    console.log('requiredAuthentication');
-
-    if (req.session.user) {
-        next();
-    } else {
-        req.session.error = 'Access denied!';
-        res.redirect('/login');
-    }
-}
-
-function userExist(req, res, next) {
-
-    console.log('userExist');
-
-    console.log(req.body);
+function emailExist(req, res, next) {
     User.count({
-        username: req.body.name
+        email: req.body.email
     }, function (err, count) {
         if (count === 0) {
             next();
         } else {
-            req.session.error = "User Exist"
-            res.redirect("/signup");
+            res.send({ 'status': 400, "data" : { "info" : "Email Exist"}});
         }
     });
 }
 
-/*
-Routes
-*/
-router.get("/", function (req, res) {
-  console.log('path /');
-  console.log(req.session);
-    if (req.session.user) {
-        res.send(req.session);
-    } else {
-        res.send({});
-    }
-});
-
-router.get("/signup", function (req, res) {
-      console.log('path get /signup');
-
-    if (req.session.user) {
-        res.redirect("/");
-    } else {
-        res.render("signup");
-    }
-});
-
-router.post("/signup", userExist, function (req, res) {
-    console.log('path post /signup');
-    console.log(req.body);
+router.post("/signup", emailExist, function (req, res) {
     var password = req.body.pass;
     var username = req.body.user;
     var email = req.body.email;
+
+    /* Verif les data ! */
+
     hash(password, function (err, salt, hash) {
-        console.log('before error');
         if (err) throw err;
         var user = new User({
             username: username,
@@ -100,57 +58,77 @@ router.post("/signup", userExist, function (req, res) {
             salt: salt,
             hash: hash,
         }).save(function (err, newUser) {
-            console.log('before error');
             if (err) throw err;
-            authenticate(newUser.username, password, function(err, user){
-                if(user){
-                    req.session.regenerate(function(){
-                        req.session.user = {'name': user.name, 'rank': user.rank};
-                        req.session.success = 'ok';
-                        console.log(req.session);
-                        res.redirect('/');
+            authenticate(newUser.email, password, function(err, user){
+
+                if (err)
+                    console.log("err: ", err);
+                else if(user){
+                    var token = jwt.sign({
+                        'uid' : user._id,
+                        'username': user.username,
+                        'rank': user.rank
+                    }, req.app.get('superSecret'), {
+                      expiresIn: 1440
                     });
+                    var result = {
+                        'status': 200,
+                        'data': {
+                            'token': token,
+                            'info': 'Vous êtes correctement enregistré.'
+                        }
+                    }
+                    res.send(result);
                 }
             });
         });
     });
 });
 
-router.get("/login", function (req, res) {
-      console.log('path get /login');
-    console.log(req.session);
-    //res.render("login");
-    res.send(req.session);
-});
-
 router.post("/login", function (req, res) {
-      console.log('path post /login');
-      console.log(req.body)
-    authenticate(req.body.user, req.body.pass, function (err, user) {
+
+    authenticate(req.body.email, req.body.pass, function (err, user) {
         if (err) {
             console.log('err: ', err);
         }
         if (user) {
-            console.log('user');
-            console.log(user);
-
-            req.session.regenerate(function () {
-
-                req.session.user = user;
-                req.session.success = 'Authenticated as ' + user.username + ' click to <a href="/logout">logout</a>. ' + ' You may now access <a href="/restricted">/restricted</a>.';
-                console.log('req.session');
-                console.log(req.session);
-                res.redirect('/auth');
+            var token = jwt.sign({
+                'uid' : user._id,
+                'username': user.username,
+                'rank': user.rank
+            }, req.app.get('superSecret'), {
+              expiresIn: 1440
             });
+            var result = {
+                'status': 200,
+                'data': {
+                    'token': token,
+                    'info': 'Vous êtes correctement connecté.'
+                }
+            }
+            res.send(result);
         } else {
-            req.session.error = 'Authentication failed, please check your ' + ' username and password.';
-            res.redirect('/auth/login');
+            var result = {
+                'status': 400,
+                'data': {
+                    'info': 'Error login or password'
+                }
+            }
+            res.send(result);
         }
     });
 });
 
+function requiredAuthentication(req, res, next) {
+    if (req.session.user) {
+        next();
+    } else {
+        req.session.error = 'Access denied!';
+        res.redirect('/login');
+    }
+}
+
 router.get('/logout', function (req, res) {
-      console.log('path get /logout');
 
     req.session.destroy(function () {
         res.redirect('/');
@@ -158,8 +136,6 @@ router.get('/logout', function (req, res) {
 });
 
 router.get('/profile', requiredAuthentication, function (req, res) {
-        console.log('path get/profile');
-
     res.send('Profile page of '+ req.session.user.username +'<br>'+' click to <a href="/logout">logout</a>');
 });
 
