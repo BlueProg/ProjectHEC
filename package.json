@@ -15,6 +15,7 @@
     "express": "^4.15.2",
     "express-session": "^1.15.1",
     "jade": "^1.11.0",
+    "jsonwebtoken": "^7.3.0",
     "mongodb": "^2.2.24",
     "mongoose": "^4.8.6",
     "nodemailer": "^3.1.3",

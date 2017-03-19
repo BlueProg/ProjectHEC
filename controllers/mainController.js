@@ -29,7 +29,6 @@ router.route('/sendMessage')
 	});
 
 router.get('/', function(req, res) {
-	console.log('get /');
 	res.sendfile('./public/index.html');
 });
 
