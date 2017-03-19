@@ -10,11 +10,15 @@ var url = '';
 var authController = require('./controllers/authController');
 var mainController = require('./controllers/mainController');
 
+var secret = '';
+
 try {
     var config = require('./config');
     url = config.mongodb;
+    secret = config.secretJwt;
 } catch (ex) {
     url = process.env.MONGODB_URI;
+    secret = process.env.SECRETJWT;
 }
 
 mongoose.connect(url);
@@ -26,7 +30,7 @@ db.once('open', function () {
 
   app.use(bodyParser.urlencoded({ extended: false }))
   app.use(bodyParser.json());
-  app.set('superSecret', config.secretJwt || process.env.SECRETJWT);
+  app.set('superSecret', secret);
   app.use('/auth', authController);
   app.use('/', mainController);
   app.use(express.static(__dirname + '/public'));
