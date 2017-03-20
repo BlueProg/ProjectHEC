@@ -18,7 +18,7 @@ app.config(function($stateProvider, $httpProvider) {
 	$stateProvider.state(mainState);
 	$stateProvider.state(otherwise);
 })
-.controller('SpredController', function ($scope, $http, ServerCommunicationFactory, ServerAuthFactory, TokenService) {
+.controller('SpredController', function ($scope, $http, $window, ServerCommunicationFactory, ServerAuthFactory, TokenService) {
 	$scope.userList = [];
 	$scope.validLength = 159;
 	$scope.diffList = [];
@@ -27,8 +27,34 @@ app.config(function($stateProvider, $httpProvider) {
 
 	ServerCommunicationFactory.getUserList().then(function (result) {
 
+		console.log(result);
+		if (result.data && result.data.data && result.data.status == 400) {
+			toastr.options = {
+			  "closeButton": true,
+			  "debug": false,
+			  "newestOnTop": false,
+			  "progressBar": false,
+			  "positionClass": "toast-top-center",
+			  "preventDuplicates": false,
+			  "onclick": null,
+			  "showDuration": "300",
+			  "hideDuration": "1000",
+			  "timeOut": "8000",
+			  "extendedTimeOut": "1000",
+			  "showEasing": "swing",
+			  "hideEasing": "linear",
+			  "showMethod": "fadeIn",
+			  "hideMethod": "fadeOut"
+			}
+		  	toastr.error(result.data.data.info);
+		  	var url = "http://" + $window.location.host + "/";
+		  	$window.location.href = url;
+		}
 		if (result.data.allData)
 			$scope.data = result.data;
+		else
+			$scope.data = {};
+
 	});
 	
 	$scope.title = 'Spred';
@@ -102,11 +128,9 @@ app.config(function($stateProvider, $httpProvider) {
 				}
 			}
 			ServerCommunicationFactory.sendMessage({"message" : $scope.dataTextarea, "data": data, "expeditor": $scope.expeditor}).then(function(result) {
-				if (result == 200) {
-					$scope.dataTextarea = "";	
-				}
-				$('#confirmModal').modal('hide');
-				toastr.options = {
+				console.log(result);
+				if (result.data && result.data.data && result.data.status == 400) {
+					toastr.options = {
 					  "closeButton": true,
 					  "debug": false,
 					  "newestOnTop": false,
@@ -123,7 +147,32 @@ app.config(function($stateProvider, $httpProvider) {
 					  "showMethod": "fadeIn",
 					  "hideMethod": "fadeOut"
 					}
-			  	toastr.success('Message envoyé avec succès !');
+				  	toastr.error(result.data.data.info);
+				  	var url = "http://" + $window.location.host + "/";
+				  	$window.location.href = url;
+				}
+				else if (result == 200) {
+					$scope.dataTextarea = "";	
+					toastr.options = {
+					  "closeButton": true,
+					  "debug": false,
+					  "newestOnTop": false,
+					  "progressBar": false,
+					  "positionClass": "toast-top-center",
+					  "preventDuplicates": false,
+					  "onclick": null,
+					  "showDuration": "300",
+					  "hideDuration": "1000",
+					  "timeOut": "8000",
+					  "extendedTimeOut": "1000",
+					  "showEasing": "swing",
+					  "hideEasing": "linear",
+					  "showMethod": "fadeIn",
+					  "hideMethod": "fadeOut"
+					}
+				  	toastr.success('Message envoyé avec succès !');
+				}
+				$('#confirmModal').modal('hide');
 			});
 		}1
 	}
@@ -145,9 +194,33 @@ app.config(function($stateProvider, $httpProvider) {
 
 	$scope.delete = function() {
 		ServerCommunicationFactory.deleteData().then(function(result) {
-			$scope.userList = result.data;
-			$scope.data = "";
-			cleanImport();
+			if (result.data && result.data.data && result.data.status == 400) {
+				toastr.options = {
+					  "closeButton": true,
+					  "debug": false,
+					  "newestOnTop": false,
+					  "progressBar": false,
+					  "positionClass": "toast-top-center",
+					  "preventDuplicates": false,
+					  "onclick": null,
+					  "showDuration": "300",
+					  "hideDuration": "1000",
+					  "timeOut": "8000",
+					  "extendedTimeOut": "1000",
+					  "showEasing": "swing",
+					  "hideEasing": "linear",
+					  "showMethod": "fadeIn",
+					  "hideMethod": "fadeOut"
+					}
+				  	toastr.error(result.data.data.info);
+				  	var url = "http://" + $window.location.host + "/";
+				  	$window.location.href = url;
+			}
+			else {
+				$scope.userList = result.data;
+				$scope.data = "";
+				cleanImport();
+			}
 		});
 	}
 
@@ -226,8 +299,32 @@ app.config(function($stateProvider, $httpProvider) {
 				}
 			}
 			ServerCommunicationFactory.addUserList(data).then(function(result) {
-				$scope.data = data;
-				cleanImport();
+				if (result.data && result.data.data && result.data.status == 400) {
+					toastr.options = {
+					  "closeButton": true,
+					  "debug": false,
+					  "newestOnTop": false,
+					  "progressBar": false,
+					  "positionClass": "toast-top-center",
+					  "preventDuplicates": false,
+					  "onclick": null,
+					  "showDuration": "300",
+					  "hideDuration": "1000",
+					  "timeOut": "8000",
+					  "extendedTimeOut": "1000",
+					  "showEasing": "swing",
+					  "hideEasing": "linear",
+					  "showMethod": "fadeIn",
+					  "hideMethod": "fadeOut"
+					}
+				  	toastr.error(result.data.data.info);
+				  	var url = "http://" + $window.location.host + "/";
+				  	$window.location.href = url;
+				}
+				else {
+					$scope.data = data;
+					cleanImport();	
+				}
 			});
 		}
 	}
