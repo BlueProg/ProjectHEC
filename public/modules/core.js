@@ -50,11 +50,9 @@ app.config(function($stateProvider, $httpProvider) {
 		  	var url = "http://" + $window.location.host + "/";
 		  	$window.location.href = url;
 		}
-		if (result.data.allData)
-			$scope.data = result.data;
-		else
-			$scope.data = {};
-
+		else {
+			$scope.data = result.data.data.data;
+		}
 	});
 	
 	$scope.title = 'Spred';
@@ -322,8 +320,8 @@ app.config(function($stateProvider, $httpProvider) {
 				  	$window.location.href = url;
 				}
 				else {
-					$scope.data = data;
-					cleanImport();	
+					$scope.data = result.data.data.data;
+					cleanImport();
 				}
 			});
 		}
