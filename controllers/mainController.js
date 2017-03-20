@@ -6,6 +6,7 @@ var router = express.Router();
 var request = require('request');
 var path = require('path');
 var User = require(path.resolve( __dirname, '../models/user'));
+var DataUsers = require(path.resolve( __dirname, '../models/dataUsers'));
 var SmsSend = require(path.resolve( __dirname, '../models/smsSend'));
 var jwt    = require('jsonwebtoken'); // used to create, sign, and verify tokens
 var Promise = require('promise');
@@ -50,24 +51,62 @@ router.route('/userList')
 	.get(function(req, res) {
 		
 		checkRank(req).then(function(data) {
-
 			if (data.status == 200) {
-				data.data.data = userList;
-				res.json(data);
+				getUid(req).then(function(uid){
+					DataUsers.findOne({'userUid': uid}, function (err, user) {
+						console.log('err: ', err);
+						console.log(user);
+						if (user && user.dataUsers) {
+							res.send({
+		            			'status': 200,
+		            			'data': {
+		            				'info': 'Données correctement récupéré',
+		            				'data': user.dataUsers
+		            			}
+		            		});	
+						}
+						else {
+							res.send({
+		            			'status': 200,
+		            			'data': {
+		            				'info': 'Données correctement récupéré',
+		            				'data': {}
+		            			}
+		            		});		
+						}
+					})
+				})
 			}
 			else
 				res.send(data);
 		})
 	})
 	.post(function(req, res) {
-		
-		
+
 		checkRank(req).then(function(data) {
 
 			if (data.status == 200) {
 				userList = req.body;
-				data.data.data = userList;
-				res.send(data);
+
+				getUid(req).then(function(uid){
+					dataUsers = new DataUsers({
+						userUid: uid,
+						dataUsers: userList 
+		            }).save(function(err, dataMongo) {
+		            	if (err)
+		            		console.log('Error save dataUsers: ', err);
+		            	else {
+		            		console.log(dataMongo);
+		            		res.send({
+		            			'status': 200,
+		            			'data': {
+		            				'info': 'Données correctement enregistré',
+		            				'data': dataMongo.dataUsers
+		            			}
+		            		});
+		            	}
+		            })
+				});
 			}
 			else
 				res.send(data);
@@ -78,8 +117,16 @@ router.route('/userList')
 		checkRank(req).then(function(data) {
 			if (data.status == 200) {
 				userList = [];
-				data.data.data = userList;
-				res.send(data);
+				getUid(req).then(function(uid){
+					DataUsers.findOne({'userUid': uid}).remove().exec();
+					res.send({
+            			'status': 200,
+            			'data': {
+            				'info': 'Données correctement supprimé',
+            				'data': {}
+            			}
+            		});
+				});
 			} else
 				res.send(data);
 		})
@@ -145,6 +192,16 @@ function sendSms(data) {
         else
         	console.log(error);
     });
+}
+
+function getUid(req) {
+
+	return new Promise( function(resolve, reject) {
+		var token = req.headers.authorization;
+		jwt.verify(token, req.app.get('superSecret'), function(err, decoded) {
+			resolve(decoded.uid);
+		})
+	})
 }
 
 function checkRank(req) {
