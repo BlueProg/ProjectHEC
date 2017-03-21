@@ -8,6 +8,17 @@ textarea {
 	margin: 20px;
 }
 
+.separator {
+	margin: 40px;
+    border-top-style: solid;
+    border-color: cadetblue;
+    border-top-width: 1px;
+}
+
+.limitPicture {
+	height: 250px;
+}
+
 .margin5 {
 	margin: 5px !important;
 }
@@ -21,6 +32,10 @@ textarea {
 }
 
 .marginT15 {
+	margin-top: 15px !important;
+}
+
+.marginT35 {
 	margin-top: 15px !important;
 }
 
