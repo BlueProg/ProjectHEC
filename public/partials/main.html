@@ -2,47 +2,9 @@
 
   <!-- HEADER AND TODO COUNT -->
   <div class="jumbotron text-center">
-      <h1>{{title}}<img class="marginL65" src="spred.png"></h1>
+    <img class="marginL65 limitPicture" src="spred.png">
   </div>
   <form ng-submit="send()" name="myForm">
-  <div class="row">
-    <div ng-show="data && data.dest"> 
-      <div class="col-md-4">
-        <div class="text-center">
-          <label class="marginR15">DESTINATAIRE</label><input ng-model="searchUser">
-        </div>
-        <div class="margin20">
-          <div id="teamCheckboxList" class="checkboxList">
-            <div ng-repeat="user in data.dest | filter: searchUser">
-              <label>
-                <input class="margin5" type="checkbox" ng-model="user.isChecked" />
-                <span>{{user.name | uppercase}}</span>
-              </label>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div ng-show="data && data.filter">
-      <div ng-repeat="filter in data.filter">
-        <div class="col-md-4">
-          <div class="text-center">
-            <label class="marginR15">{{filter.name | uppercase}}</label>
-          </div>
-          <div class="margin20">
-            <div id="teamCheckboxList" class="checkboxList">
-              <div ng-repeat="data in filter.data">
-                <label>
-                  <input class="margin5" type="checkbox" ng-model="data.isChecked" ng-change="selectUserList(data, filter)"/>
-                  <span>{{data.name | uppercase}}</span>
-                </label>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
   <div class="row">
     <div class="col-md-2"></div>
     <div class="col-md-8">
@@ -73,6 +35,47 @@
         <button ng-click="delete()" type="button" class="btn btn-danger btn-lg">Supprimer data</button>
       </div>
       <div class="col-md-2"></div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-12 separator"></div>
+  </div>
+  <div class="row marginT35">
+    <div ng-show="data && data.dest"> 
+      <div class="col-md-3">
+        <div class="text-center">
+          <label class="marginR15">DESTINATAIRE</label><input ng-model="searchUser">
+        </div>
+        <div class="margin20">
+          <div id="teamCheckboxList" class="checkboxList">
+            <div ng-repeat="user in data.dest | filter: searchUser">
+              <label>
+                <input class="margin5" type="checkbox" ng-model="user.isChecked" />
+                <span>{{user.name | uppercase}}</span>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div ng-show="data && data.filter">
+      <div ng-repeat="filter in data.filter">
+        <div class="col-md-3">
+          <div class="text-center">
+            <label class="marginR15">{{filter.name | uppercase}}</label>
+          </div>
+          <div class="margin20">
+            <div id="teamCheckboxList" class="checkboxList">
+              <div ng-repeat="data in filter.data">
+                <label>
+                  <input class="margin5" type="checkbox" ng-model="data.isChecked" ng-change="selectUserList(data, filter)"/>
+                  <span>{{data.name | uppercase}}</span>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
