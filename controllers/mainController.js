@@ -18,9 +18,7 @@ router.route('/sendMessage')
 	.post(function(req, res) {
 
 		checkRank(req).then(function(data) {
-			console.log('/sendMessage');
-			if (result.status == 200) {
-				console.log('/sendMessage entre');
+			if (data.status == 200) {
 				var tel = '';
 				for (var i = req.body.data.length - 1; i >= 0; i--) {
 					tel += req.body.data[i].number + ',';
@@ -34,11 +32,10 @@ router.route('/sendMessage')
 				data.expeditor = req.body.expeditor;
 				sendSms(data);
 
-				res.send(result);
+				res.send(data);
 			}
 			else {
-				console.log('/sendMessage non');
-				res.send(result);
+				res.send(data);
 			}	
 		})
 	});
