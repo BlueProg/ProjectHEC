@@ -1,4 +1,4 @@
-var app = angular.module('app', ['registerModule', 'profileModule', 'navModule', 'ngAnimate', 'ngSanitize', 'ui.bootstrap', 'ui.router'])
+var app = angular.module('app', ['historiqueModule', 'registerModule', 'profileModule', 'navModule', 'ngAnimate', 'ngSanitize', 'ui.bootstrap', 'ui.router'])
 
 app.config(function($stateProvider, $httpProvider) {
 

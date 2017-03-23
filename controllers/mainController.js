@@ -30,15 +30,28 @@ router.route('/sendMessage')
 				data.tel = tel;
 				data.message = req.body.message;
 				data.expeditor = req.body.expeditor;
-				sendSms(data);
-
+				sendSms(data, req);
 				res.send(data);
 			}
 			else {
 				res.send(data);
 			}	
 		})
-	});
+	})
+	.get(function(req, res) {
+		checkRank(req).then(function(data) {
+			if (data.status == 200) {
+				getUid(req).then(function(uid){
+					SmsSend.find({'userUid': uid}, function (err, datas) {
+						var dataReverse = datas.reverse();
+						res.send(dataReverse);
+					})
+				})
+			}
+			else
+				res.send(data);
+		})
+	})
 
 router.get('/', function(req, res) {
 	res.sendfile('./public/index.html');
@@ -51,8 +64,6 @@ router.route('/userList')
 			if (data.status == 200) {
 				getUid(req).then(function(uid){
 					DataUsers.findOne({'userUid': uid}, function (err, user) {
-						console.log('err: ', err);
-						console.log(user);
 						if (user && user.dataUsers) {
 							res.send({
 		            			'status': 200,
@@ -153,7 +164,7 @@ function sendMail(data) {
 	});	
 }
 
-function sendSms(data) {
+function sendSms(data, req) {
 	request({
 		headers: {'content-type' : 'application/x-www-form-urlencoded'},
 	    url: 'http://www.smsenvoi.com/getapi/sendsms/',
@@ -172,16 +183,19 @@ function sendSms(data) {
     	if (!error && response.statusCode == 200) {
 			var resData = JSON.parse(body);
             if (resData.success) {
+            	getUid(req).then(function(uid){
 	            	smsSend = new SmsSend({
-					expeditor: data.expeditor,
-					message: data.message,
-					idSend: resData.message_id
-	            }).save(function(err, data) {
-	            	if (err)
-	            		console.log('Error save smsSend: ', err);
-	            	else
-	            		console.log(resData);
-	            })
+	            		userUid: uid,
+						expeditor: data.expeditor,
+						message: data.message,
+						idSend: resData.message_id
+	            	}).save(function(err, data) {
+		            	if (err)
+		            		console.log('Error save smsSend: ', err);
+		            	else
+		            		console.log('message save: ', data.expeditor);
+		            })
+		        })
             }
             else
 	            console.log('error smsSend', resData);
