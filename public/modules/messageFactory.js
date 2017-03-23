@@ -14,6 +14,9 @@ angular.module('app')
 	},
 	factory.sendMessage = function(data) {
 		return $http.post('/sendMessage', data);
+	},
+	factory.getSendMessage = function() {
+		return $http.get('/sendMessage');
 	}
 	return factory;
 }])

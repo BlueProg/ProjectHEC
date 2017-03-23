@@ -1,0 +1,24 @@
+<div ng-controller="HistoriqueController" class="container">
+
+	<div class="marginT35" ng-show="datas">
+      <div ng-repeat="data in datas">
+      	<div class="row">
+      		<div class="col-md-2"></div>
+    		<div class="col-md-8">
+		      	<div class="card">
+				  <div class="card-header">
+				    <strong>{{data.expeditor}}</strong>
+				  </div>
+				  <div class="card-block">
+				    <p class="card-text">{{data.message}}</p>
+				  </div>
+				  <div class="card-footer text-muted">
+				    Le {{data.dateParse}}
+				  </div>
+				</div>
+			</div>
+    		<div class="col-md-2"></div>
+		</div>
+      </div>
+    </div>
+</div>
