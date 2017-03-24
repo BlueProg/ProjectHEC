@@ -6,6 +6,7 @@ var smsSendSchema = new mongoose.Schema({
 
     expeditor: String,
     message: String,
+    recipients: String,
     idSend: String,
     userUid: String,
     date: String

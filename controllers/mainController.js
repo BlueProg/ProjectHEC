@@ -188,6 +188,7 @@ function sendSms(data, req) {
 	            		userUid: uid,
 						expeditor: data.expeditor,
 						message: data.message,
+						recipients: data.tel,
 						idSend: resData.message_id
 	            	}).save(function(err, data) {
 		            	if (err)
