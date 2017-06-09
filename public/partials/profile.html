@@ -1,1 +1,15 @@
-Profile page
+<style>
+</style>
+<div ng-controller="ProfileController" class="container">
+	<div ng-init="name='Paul GUILLOT'">
+		<h1>Bonjour {{name}}</h1>
+		<p>Nom : <input type="text" ng-model="name"></p>
+		<p>Choisi ton média :
+		<select>
+			<option value="SMS">SMS</option>
+			<option value="Facebook Messenger" disabled>Facebook Messenger</option>
+			<option value="Slack" disabled>Slack</option>
+			<option value="WhatsApp" disabled>What's app</option>
+		</select></p>
+	</div>
+</div>
